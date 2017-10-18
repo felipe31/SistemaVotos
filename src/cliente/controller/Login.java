@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package cliente;
+package cliente.controller;
 import cliente.vo.Cliente;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -16,22 +16,25 @@ import org.json.simple.JSONObject;
  */
 public class Login {
     
+    private Cliente cliente;
+    
     public static void main(String[] args){
         new Login();
     }
 
     public Login() {
-        Cliente cliente = new Cliente("Felipe", "12345678", "", "");
-        JSONObject obj = new JSONObject();
-        
-        obj.put("tipo", "0");
-        obj.put("ra", cliente.getRa());
-        obj.put("senha", "1234");
-        System.out.println(obj.toString());
-        enviarJSON(obj);
     }
     
-    
+    public void Logar(Cliente cliente, byte[] hashedPwd){
+        this.cliente = cliente;
+        
+        JSONObject obj = new JSONObject();
+        obj.put("tipo", "0");
+        obj.put("ra", cliente.getRa());
+        obj.put("senha", new String(hashedPwd));
+        System.out.println(obj.toString()+new String(hashedPwd));
+        enviarJSON(obj);        
+    }
        
     public boolean enviarJSON(JSONObject obj){
         try{                       

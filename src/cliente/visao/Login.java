@@ -3,22 +3,28 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package servidor.visao;
+package cliente.visao;
 
 import javax.swing.JOptionPane;
 import org.json.simple.JSONObject;
+import cliente.vo.Cliente;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+
 
 /**
  *
  * @author Samsung
  */
 public class Login extends javax.swing.JFrame {
+    private cliente.controller.Login loginCtrl;
 
     /**
      * Creates new form Login
      */
     public Login() {
-        initComponents();
+        initComponents(); 
+        loginCtrl = new cliente.controller.Login();
     }
 
     /**
@@ -90,19 +96,21 @@ public class Login extends javax.swing.JFrame {
         }
         if(!jTextFieldLogin.getText().toString().isEmpty() && !jTextFieldSenha.getText().toString().isEmpty())
         {
-            JSONObject obj = new JSONObject();
-            obj.put("tipo", 0);
-            obj.put("ra", jTextFieldLogin.getText().toString());
-            obj.put("senha", jTextFieldSenha.getText().toString());
+            try{
+                MessageDigest digest = MessageDigest.getInstance("SHA-256");
+
+                byte[] hash = digest.digest(jTextFieldSenha.getText().getBytes(StandardCharsets.UTF_8));
+                Cliente cliente = new Cliente(null, jTextFieldLogin.getText(), null, null);
+                loginCtrl.Logar(cliente, hash);
+            }catch(Exception e ){}
         }
         if(jTextFieldLogin.getText().equals("adm") && jTextFieldSenha.getText().equals("adm"))
         {
-            Home home = new Home();
+            Login home = new Login();
             home.setVisible(true);
             System.out.println(jTextFieldLogin.getText().toString());
             System.out.println(jTextFieldLogin.getText().toString());
             this.dispose();
-           
         }
     }//GEN-LAST:event_jButtonLogarActionPerformed
 
