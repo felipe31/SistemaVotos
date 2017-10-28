@@ -5,11 +5,13 @@
  */
 package cliente.controller;
 
+import cliente.visao.Home;
 import cliente.vo.Cliente;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -34,67 +36,48 @@ public class Login {
     public Login() {
     }
 
-    public void Logar(Cliente cliente, byte[] hashedPwd) {
+    public JSONObject Logar(Cliente cliente, byte[] hashedPwd) {
         this.cliente = cliente;
 
         JSONObject obj = new JSONObject();
         obj.put("tipo", 0);
         obj.put("ra", cliente.getRa());
         obj.put("senha", new String(hashedPwd));
-        //   System.out.println(obj.toString()+new String(hashedPwd));
-        enviarJSON(obj);
-//        abrirRecepcaoMensagens();
-
+        try {
+            clientSocket = new DatagramSocket();
+        } catch (SocketException ex) {
+            Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        if(enviarJSON(obj)){
+            JSONObject jsonObj = receberJSON();
+            if(jsonObj != null){
+                return jsonObj;
+            }
+        }
+        return null;
     }
 
-//    private boolean abrirRecepcaoMensagens() {
-//   
-//            rxMensagensThread = new Thread(() -> {
-//                try {
-//                    String[] datagrama;
-//                    DatagramPacket mensagemPkt = new DatagramPacket(new byte[10000], 10000, InetAddress.getByName("localhost"), 20000);
-//                    mensagemPkt.setData(new byte[10000]);
-//                   String receiveStr = new String(mensagemPkt.getData());
-//                            receiveStr = receiveStr.trim();
-//                            System.out.println( receiveStr);
-//
-//                            // JSONParser parser = new JSONParser();
-//                            JSONObject jSONObject = new JSONObject(receiveStr);
-//                    String receiveStr = new String(mensagemPkt.getData());
-//                  //  receiveStr = receiveStr.trim();
-//                   // datagrama = receiveStr.split("#");
-//                    System.out.println(receiveStr);
-//                    int aux = 0;
-//                   // System.out.println(datagrama[3]);
-//                    switch (aux) {
-//                        case '2':
-//                            conexaoAceita = true;
-//                            // atualizaListaContatos(datagrama);
-//                            break;
-//
-//                        case '4':
-//                            //recepcaoMensagem(datagrama);
-//                            break;
-//                        default:
-//                            System.out.println(receiveStr);
-//                      //  respostaTextArea.setText(respostaTextArea.getText()+" "+"\nMensagem inválida recebida!");
-//                        // enviar mensagem avisando o erro pra quem mandou
-//                        }
-//
-//                    datagrama = null;
-//
-//                    Thread.sleep(500);
-//                } catch (UnknownHostException ex) {
-//                    Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
-//                } catch (InterruptedException ex) {
-//                    Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
-//                }
-//            });
-//            rxMensagensThread.start();
-//
-//            return true;
-//
-//        }
+    private JSONObject receberJSON() {
+
+        try {
+            DatagramPacket mensagemPkt = new DatagramPacket(new byte[10000], 10000, InetAddress.getByName("127.0.0.1"), 20000);
+            mensagemPkt.setData(new byte[10000]);
+            clientSocket.receive(mensagemPkt);
+            String receiveStr = new String(mensagemPkt.getData());
+            receiveStr = receiveStr.trim();
+            JSONObject jsonObj = new JSONObject(receiveStr);
+            System.out.println(jsonObj.toString());
+            return jsonObj;
+
+        } catch (UnknownHostException ex) {
+            Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SocketException e){
+            Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, e);
+        } catch (IOException e){
+            Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, e);
+        }
+        return null;
+    }
     
 
        
@@ -106,9 +89,8 @@ public class Login {
             String mensagemStr = obj.toString();
             byte[] messageByte = mensagemStr.getBytes();
 
-            DatagramPacket packet = new DatagramPacket(messageByte, messageByte.length, InetAddress.getByName("localhost"), 20000);
-            // System.out.println(mensagemStr);
-            DatagramSocket clientSocket = new DatagramSocket();
+            DatagramPacket packet = new DatagramPacket(messageByte, messageByte.length, InetAddress.getByName("127.0.0.1"), 20000);
+            System.out.println(mensagemStr);
             clientSocket.send(packet);
             System.out.println("\nMensagem enviada com sucesso!\n\n");
             return true;

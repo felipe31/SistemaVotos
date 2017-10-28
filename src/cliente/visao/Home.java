@@ -3,15 +3,18 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package servidor.visao;
+package cliente.visao;
 
+import cliente.vo.Cliente;
 import java.awt.Toolkit;
+import servidor.visao.*;
 
 /**
  *
  * @author Samsung
  */
 public class Home extends javax.swing.JFrame {
+    Cliente cliente = null;
 
     /**
      * Creates new form Home
@@ -20,7 +23,12 @@ public class Home extends javax.swing.JFrame {
         initComponents();
         setLocation(Toolkit.getDefaultToolkit().getScreenSize().width/2-this.getSize().width/2, Toolkit.getDefaultToolkit().getScreenSize().height/2-this.getSize().height/2);
     }
-
+    public Home(Cliente cliente) {
+        initComponents();
+        setLocation(Toolkit.getDefaultToolkit().getScreenSize().width/2-this.getSize().width/2, Toolkit.getDefaultToolkit().getScreenSize().height/2-this.getSize().height/2);
+        this.cliente = cliente;
+        jLabelBemVindo.setText("Seja bem-vindo, "+cliente.getNome());
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -30,17 +38,27 @@ public class Home extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jLabelBemVindo = new javax.swing.JLabel();
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        jLabelBemVindo.setText("Seja bem vindo, Teste!");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabelBemVindo)
+                .addContainerGap(253, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabelBemVindo)
+                .addContainerGap(278, Short.MAX_VALUE))
         );
 
         pack();
@@ -72,6 +90,7 @@ public class Home extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(Home.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
+        //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -82,5 +101,6 @@ public class Home extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel jLabelBemVindo;
     // End of variables declaration//GEN-END:variables
 }

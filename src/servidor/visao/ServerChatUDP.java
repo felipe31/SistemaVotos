@@ -5,30 +5,16 @@
  */
 package servidor.visao;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.Inet4Address;
 import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableModel;
-import jdk.nashorn.internal.parser.JSONParser;
 import org.json.JSONObject;
 
 /**
@@ -74,7 +60,6 @@ public class ServerChatUDP extends javax.swing.JPanel {
 
                             receiveStr = receiveStr.trim();
 
-                            //  JSONObject jsono = new JSONObject();
                             serverTextArea.setText(serverTextArea.getText() + "\n"
                                     + receivePkt.getAddress().toString().split("/")[1] + ":"
                                     + receivePkt.getPort() + "\n" + receiveStr);
@@ -82,19 +67,14 @@ public class ServerChatUDP extends javax.swing.JPanel {
                             System.out.println(receiveStr);
 
                             JSONObject jSONObject = new JSONObject(receiveStr);
-                            System.out.println(jSONObject.get("tipo"));
                             String ip = receivePkt.getAddress().toString().split("/")[1];
 
-                            if (jSONObject.get("tipo").equals(0)) {
-                            
-
-                            }
-                            
                             switch ((int)jSONObject.get("tipo"))
                             {
                                 case 0:
-                                System.out.println("Login");
-                                addConexao((String) jSONObject.get("ra"), ip, receivePkt.getPort());
+                                    System.out.println("Login");
+                                    addConexao((String) jSONObject.get("ra"), ip, receivePkt.getPort());
+                                    confimarLogin(ip, receivePkt.getPort());
                                     break;
                                 
                             }
@@ -134,7 +114,7 @@ public class ServerChatUDP extends javax.swing.JPanel {
     }
 
     private void addConexao(String ra, String ip, int porta) {
-        System.out.println("to aqui exu");
+        System.out.println("to aqui acho");
         table.addRow(new Object[]{ra, ip, porta});
         clientesConectados.add(new String[]{ra, ip, String.valueOf(porta)});
         confimarLogin(ip, porta);
@@ -155,50 +135,20 @@ public class ServerChatUDP extends javax.swing.JPanel {
         return false;
     }
 
-    private boolean confimarLogin(String ip, int porta) {
+    protected boolean confimarLogin(String ip, int porta) {
         JSONObject obj = new JSONObject();
         obj.put("tipo", 2);
         obj.put("nome", "sucess");
-        obj.put("tamanho", 666);
-        //   System.out.println(obj.toString()+new String(hashedPwd));
-    
-            String mensagemStr = obj.toString();
-           // byte[] messageByte = mensagemStr.getBytes();
-            
-                try {
+        obj.put("tamanho", 0);
 
-            DatagramPacket enviar = null;
-            try {
-                if (isBroadcast(ip, String.valueOf(porta))) {
-                    for (String[] str : clientesConectados) {
-                        System.out.println(mensagemStr + "-" + str[1] + "-" + str[2]);
-                        enviar = new DatagramPacket(mensagemStr.getBytes(), mensagemStr.getBytes().length, InetAddress.getByName(ip), porta);
-                        serverDatagram.send(enviar);
-                    }
-                } else {
-                    enviar = new DatagramPacket(mensagemStr.getBytes(), mensagemStr.getBytes().length,
-                            InetAddress.getByName(ip), porta);
-                                System.out.println("\nConfirmação de login enviada!\n\n");
-
-                    serverDatagram.send(enviar);
-                }
-
-            } catch (Exception e) {
-                System.out.println("Deu pau no enviarMensagem!!!!\n" + e);
-
-                return false;
-            }
+        String mensagemStr = obj.toString();
+        
+        if(enviarMensagem(mensagemStr, ip, porta)){
+            System.out.println("Login confirmado com sucesso!");
             return true;
-
-//            DatagramPacket packet = new DatagramPacket(messageByte, messageByte.length, InetAddress.getByName(ip), porta);
-//            DatagramSocket clientSocket = new DatagramSocket();
-//            clientSocket.send(packet);
-            //  enviaListaConectados("999.999.999.999", 99999);
-           // return true;
-        } catch (Exception e) {
-            return false;
-        }
-
+        }else
+            System.out.println("Erro ao confirmar o login!");
+        return false;
     }
 
     public boolean enviaListaConectados(String ip, int porta) {

@@ -7,8 +7,11 @@ package cliente.visao;
 
 import javax.swing.JOptionPane;
 import cliente.vo.Cliente;
+import java.awt.Toolkit;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import org.json.JSONObject;
 
 
 /**
@@ -23,6 +26,7 @@ public class Login extends javax.swing.JFrame {
      */
     public Login() {
         initComponents(); 
+        setLocation(Toolkit.getDefaultToolkit().getScreenSize().width/2-this.getSize().width/2, Toolkit.getDefaultToolkit().getScreenSize().height/2-this.getSize().height/2);
         loginCtrl = new cliente.controller.Login();
     }
 
@@ -36,9 +40,14 @@ public class Login extends javax.swing.JFrame {
     private void initComponents() {
 
         jButtonLogar = new javax.swing.JButton();
-        jButtonCadastrar = new javax.swing.JButton();
         jTextFieldLogin = new javax.swing.JTextField();
-        jTextFieldSenha = new javax.swing.JTextField();
+        jLabelLogin = new javax.swing.JLabel();
+        jLabelSenha = new javax.swing.JLabel();
+        jLabelHost = new javax.swing.JLabel();
+        jTextFieldHost = new javax.swing.JTextField();
+        jTextFieldPorta = new javax.swing.JTextField();
+        jLabelPorta = new javax.swing.JLabel();
+        jPasswordFieldSenha = new javax.swing.JPasswordField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -49,7 +58,17 @@ public class Login extends javax.swing.JFrame {
             }
         });
 
-        jButtonCadastrar.setText("Cadastrar");
+        jLabelLogin.setText("Login");
+
+        jLabelSenha.setText("Senha");
+
+        jLabelHost.setText("Host");
+
+        jTextFieldHost.setText("127.0.0.1");
+
+        jTextFieldPorta.setText("20000");
+
+        jLabelPorta.setText("Porta");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -58,26 +77,43 @@ public class Login extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(73, 73, 73)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jLabelLogin)
+                    .addComponent(jLabelSenha)
+                    .addComponent(jButtonLogar)
+                    .addComponent(jTextFieldLogin)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jButtonLogar)
-                        .addGap(87, 87, 87)
-                        .addComponent(jButtonCadastrar))
-                    .addComponent(jTextFieldSenha)
-                    .addComponent(jTextFieldLogin))
-                .addContainerGap(100, Short.MAX_VALUE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jTextFieldHost, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabelHost))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabelPorta)
+                            .addComponent(jTextFieldPorta, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(jPasswordFieldSenha))
+                .addContainerGap(73, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(130, Short.MAX_VALUE)
-                .addComponent(jTextFieldLogin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jTextFieldSenha, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(28, 28, 28)
+                .addGap(75, 75, 75)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButtonLogar)
-                    .addComponent(jButtonCadastrar))
-                .addGap(61, 61, 61))
+                    .addComponent(jLabelHost)
+                    .addComponent(jLabelPorta))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jTextFieldHost, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jTextFieldPorta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabelLogin)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jTextFieldLogin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabelSenha)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPasswordFieldSenha, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jButtonLogar)
+                .addContainerGap(73, Short.MAX_VALUE))
         );
 
         pack();
@@ -87,29 +123,49 @@ public class Login extends javax.swing.JFrame {
         // TODO add your handling code here:
         if(jTextFieldLogin.getText().toString().isEmpty())
         {
-                        JOptionPane.showMessageDialog(this, "Digite seu login","Digite seu login",0);
+                        JOptionPane.showMessageDialog(this, "Digite seu login","Digite seu login", JOptionPane.ERROR_MESSAGE);
         }
-        if(jTextFieldSenha.getText().toString().isEmpty())
+        if(jPasswordFieldSenha.getText().toString().isEmpty())
         {
-            JOptionPane.showMessageDialog(this, "Digite sua senha","Digite sua senha",0);
+            JOptionPane.showMessageDialog(this, "Digite sua senha","Digite sua senha", JOptionPane.ERROR_MESSAGE);
         }
-        if(!jTextFieldLogin.getText().toString().isEmpty() && !jTextFieldSenha.getText().toString().isEmpty())
+        if(!jTextFieldLogin.getText().toString().isEmpty() && !String.valueOf(jPasswordFieldSenha.getPassword()).isEmpty())
         {
-            try{
-                MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            Cliente cliente = new Cliente(null, jTextFieldLogin.getText(), null, null);
 
-                byte[] hash = digest.digest(jTextFieldSenha.getText().getBytes(StandardCharsets.UTF_8));
-                Cliente cliente = new Cliente(null, jTextFieldLogin.getText(), null, null);
-                loginCtrl.Logar(cliente, hash);
-            }catch(Exception e ){}
+            try{
+                // Hash na senha
+                MessageDigest digest = MessageDigest.getInstance("SHA-256");
+                byte[] hash = digest.digest(String.valueOf(jPasswordFieldSenha.getPassword()).getBytes(StandardCharsets.UTF_8));
+                
+                // Solicita Login
+                JSONObject jsonObj = loginCtrl.Logar(cliente, hash);
+
+                // Confere login
+                if(jsonObj != null){
+                    cliente.setNome(jsonObj.getString("nome"));
+                    
+                    new Home(cliente).setVisible(true);
+                    this.dispose();
+                    JOptionPane.showMessageDialog(this, "Sucesso no Login",
+                            "Login realizado com sucesso!", JOptionPane.INFORMATION_MESSAGE);
+                }
+                else
+                    JOptionPane.showMessageDialog(this, "Erro ao realizar o login!\nTente novamente.",
+                            "Erro!", JOptionPane.ERROR_MESSAGE);
+                    
+            }catch(NoSuchAlgorithmException e ){
+                JOptionPane.showMessageDialog(this, "Erro ao criptografar a senha!\nTente novamente.","Erro!", JOptionPane.ERROR_MESSAGE);
+            }
         }
-        if(jTextFieldLogin.getText().equals("adm") && jTextFieldSenha.getText().equals("adm"))
+        if(jTextFieldLogin.getText().equals("adm") && String.valueOf(jPasswordFieldSenha.getPassword()).equals("adm"))
         {
-            Login home = new Login();
-            home.setVisible(true);
-            System.out.println(jTextFieldLogin.getText().toString());
-            System.out.println(jTextFieldLogin.getText().toString());
-            this.dispose();
+//            Login home = new Login();
+//            home.setVisible(true);
+//            System.out.println(jTextFieldLogin.getText().toString());
+//            this.dispose();
+            System.out.println("Adm login");
+            JOptionPane.showMessageDialog(this, "Adm Login","Adm Login", JOptionPane.INFORMATION_MESSAGE);
         }
     }//GEN-LAST:event_jButtonLogarActionPerformed
 
@@ -149,9 +205,14 @@ public class Login extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButtonCadastrar;
     private javax.swing.JButton jButtonLogar;
+    private javax.swing.JLabel jLabelHost;
+    private javax.swing.JLabel jLabelLogin;
+    private javax.swing.JLabel jLabelPorta;
+    private javax.swing.JLabel jLabelSenha;
+    private javax.swing.JPasswordField jPasswordFieldSenha;
+    private javax.swing.JTextField jTextFieldHost;
     private javax.swing.JTextField jTextFieldLogin;
-    private javax.swing.JTextField jTextFieldSenha;
+    private javax.swing.JTextField jTextFieldPorta;
     // End of variables declaration//GEN-END:variables
 }
