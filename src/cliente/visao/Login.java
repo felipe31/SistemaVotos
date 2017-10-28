@@ -6,7 +6,6 @@
 package cliente.visao;
 
 import javax.swing.JOptionPane;
-import org.json.simple.JSONObject;
 import cliente.vo.Cliente;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
