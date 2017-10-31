@@ -44,7 +44,7 @@ public class Login extends javax.swing.JFrame {
         jLabelLogin = new javax.swing.JLabel();
         jLabelSenha = new javax.swing.JLabel();
         jLabelHost = new javax.swing.JLabel();
-        jTextFieldHost = new javax.swing.JTextField();
+        jTextFieldIp = new javax.swing.JTextField();
         jTextFieldPorta = new javax.swing.JTextField();
         jLabelPorta = new javax.swing.JLabel();
         jPasswordFieldSenha = new javax.swing.JPasswordField();
@@ -64,7 +64,7 @@ public class Login extends javax.swing.JFrame {
 
         jLabelHost.setText("Host");
 
-        jTextFieldHost.setText("127.0.0.1");
+        jTextFieldIp.setText("127.0.0.1");
 
         jTextFieldPorta.setText("20000");
 
@@ -83,7 +83,7 @@ public class Login extends javax.swing.JFrame {
                     .addComponent(jTextFieldLogin)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jTextFieldHost, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jTextFieldIp, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabelHost))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -101,7 +101,7 @@ public class Login extends javax.swing.JFrame {
                     .addComponent(jLabelPorta))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextFieldHost, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jTextFieldIp, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jTextFieldPorta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabelLogin)
@@ -131,8 +131,8 @@ public class Login extends javax.swing.JFrame {
         }
         if(!jTextFieldLogin.getText().toString().isEmpty() && !String.valueOf(jPasswordFieldSenha.getPassword()).isEmpty())
         {
-            Cliente cliente = new Cliente(null, jTextFieldLogin.getText(), null, null);
-
+            Cliente cliente = new Cliente(null, jTextFieldLogin.getText(), jTextFieldIp.getText(), jTextFieldPorta.getText());
+            System.out.println(cliente.getPorta());
             try{
                 // Hash na senha
                 MessageDigest digest = MessageDigest.getInstance("SHA-256");
@@ -211,7 +211,7 @@ public class Login extends javax.swing.JFrame {
     private javax.swing.JLabel jLabelPorta;
     private javax.swing.JLabel jLabelSenha;
     private javax.swing.JPasswordField jPasswordFieldSenha;
-    private javax.swing.JTextField jTextFieldHost;
+    private javax.swing.JTextField jTextFieldIp;
     private javax.swing.JTextField jTextFieldLogin;
     private javax.swing.JTextField jTextFieldPorta;
     // End of variables declaration//GEN-END:variables

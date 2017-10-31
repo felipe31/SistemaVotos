@@ -27,7 +27,9 @@ public class Login {
     private Cliente cliente;
     private Thread rxMensagensThread;
     private DatagramSocket clientSocket = null;
-    Boolean conexaoAceita;
+    private Boolean conexaoAceita;    
+    private Thread recebimentoThread = null;
+    private JSONObject jsonThread = null;
 
     public static void main(String[] args) {
         new Login();
@@ -58,30 +60,35 @@ public class Login {
     }
 
     private JSONObject receberJSON() {
-
-        try {
-            DatagramPacket mensagemPkt = new DatagramPacket(new byte[10000], 10000, InetAddress.getByName("127.0.0.1"), 20000);
-            mensagemPkt.setData(new byte[10000]);
-            clientSocket.receive(mensagemPkt);
-            String receiveStr = new String(mensagemPkt.getData());
-            receiveStr = receiveStr.trim();
-            JSONObject jsonObj = new JSONObject(receiveStr);
-            System.out.println(jsonObj.toString());
-            return jsonObj;
-
-        } catch (UnknownHostException ex) {
-            Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SocketException e){
-            Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, e);
-        } catch (IOException e){
+        recebimentoThread = new Thread(() -> {
+            try{
+                DatagramPacket mensagemPkt = new DatagramPacket(new byte[10000], 10000, InetAddress.getByName(cliente.getIp()), Integer.parseInt(cliente.getPorta()));
+                mensagemPkt.setData(new byte[10000]);
+                clientSocket.receive(mensagemPkt);
+                String receiveStr = new String(mensagemPkt.getData());
+                receiveStr = receiveStr.trim();
+                JSONObject jsonObj = new JSONObject(receiveStr);
+                System.out.println("\n[CLIENTE]: Mensagem recebida: "+jsonObj.toString());
+                jsonThread = jsonObj;
+            }catch(UnknownHostException ex) {
+                Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (SocketException e){
+                Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, e);
+            } catch (IOException e){
+                Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, e);
+            }
+                
+        });
+        
+        recebimentoThread.start();
+        try{
+            Thread.sleep(100);
+        } catch (InterruptedException e){
             Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, e);
         }
-        return null;
+        recebimentoThread.interrupt();
+        return jsonThread;
     }
-    
-
-       
-    
 
     public boolean enviarJSON(JSONObject obj) {
         try {
@@ -89,10 +96,10 @@ public class Login {
             String mensagemStr = obj.toString();
             byte[] messageByte = mensagemStr.getBytes();
 
-            DatagramPacket packet = new DatagramPacket(messageByte, messageByte.length, InetAddress.getByName("127.0.0.1"), 20000);
-            System.out.println(mensagemStr);
+            DatagramPacket packet = new DatagramPacket(messageByte, messageByte.length, InetAddress.getByName(cliente.getIp()), Integer.parseInt(cliente.getPorta()));
+            System.out.println("[CLIENTE]: Mensagem a ser enviada: "+mensagemStr);
             clientSocket.send(packet);
-            System.out.println("\nMensagem enviada com sucesso!\n\n");
+            System.out.println("\n[CLIENTE]: Mensagem enviada com sucesso!\n");
             return true;
         } catch (Exception e) {
             return false;

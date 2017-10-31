@@ -40,55 +40,49 @@ public class ServerChatUDP extends javax.swing.JPanel {
 
         try {
 
-            serverTextArea.setText("Server starded on port 20000\n");
 
             serverDatagram = new DatagramSocket(20000);
+            
+            execServidor = new Thread(() -> {
+                serverTextArea.setText("[SERVIDOR]: Servidor iniciado na porta "+serverDatagram.getLocalPort()+"\n");
 
-            execServidor = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    System.out.println("Entrou na Thread");
-
-                    try {
-
-                        while (true) {
-                            buffer = new byte[1024];
-                            receivePkt = new DatagramPacket(buffer, buffer.length);
-                            serverDatagram.receive(receivePkt);
-
-                            String receiveStr = new String(receivePkt.getData());
-
-                            receiveStr = receiveStr.trim();
-
-                            serverTextArea.setText(serverTextArea.getText() + "\n"
-                                    + receivePkt.getAddress().toString().split("/")[1] + ":"
-                                    + receivePkt.getPort() + "\n" + receiveStr);
-
-                            System.out.println(receiveStr);
-
-                            JSONObject jSONObject = new JSONObject(receiveStr);
-                            String ip = receivePkt.getAddress().toString().split("/")[1];
-
-                            switch ((int)jSONObject.get("tipo"))
-                            {
-                                case 0:
-                                    System.out.println("Login");
-                                    addConexao((String) jSONObject.get("ra"), ip, receivePkt.getPort());
-                                    confimarLogin(ip, receivePkt.getPort());
-                                    break;
+                try {
+                    
+                    while (true) {
+                        buffer = new byte[1024];
+                        receivePkt = new DatagramPacket(buffer, buffer.length);
+                        serverDatagram.receive(receivePkt);
+                        
+                        String receiveStr = new String(receivePkt.getData());
+                        
+                        receiveStr = receiveStr.trim();
+                        
+                        serverTextArea.setText(serverTextArea.getText() + "\n"
+                                + receivePkt.getAddress().toString().split("/")[1] + ":"
+                                + receivePkt.getPort() + "\n" + receiveStr);
+                        
+                        System.out.println("\n[SERVIDOR]: Mensagem recebida: "+receiveStr);
+                        
+                        JSONObject jSONObject = new JSONObject(receiveStr);
+                        String ip = receivePkt.getAddress().toString().split("/")[1];
+                        
+                        switch ((int)jSONObject.get("tipo"))
+                        {
+                            case 0:
+                                System.out.println("Login");
+                                addConexao((String) jSONObject.get("ra"), ip, receivePkt.getPort());
+                                break;
                                 
-                            }
-                            Thread.sleep(1000);
                         }
-
-                    } catch (Exception e) {
-                        System.out.println(e);
-                    } finally {
-                        if (serverDatagram != null) {
-                            serverDatagram.close();
-                        }
+                        Thread.sleep(1000);
                     }
 
+                } catch (Exception e) {
+                    System.out.println(e);
+                } finally {
+                    if (serverDatagram != null) {
+                        serverDatagram.close();
+                    }
                 }
             });
 
@@ -114,7 +108,6 @@ public class ServerChatUDP extends javax.swing.JPanel {
     }
 
     private void addConexao(String ra, String ip, int porta) {
-        System.out.println("to aqui acho");
         table.addRow(new Object[]{ra, ip, porta});
         clientesConectados.add(new String[]{ra, ip, String.valueOf(porta)});
         confimarLogin(ip, porta);
@@ -144,10 +137,10 @@ public class ServerChatUDP extends javax.swing.JPanel {
         String mensagemStr = obj.toString();
         
         if(enviarMensagem(mensagemStr, ip, porta)){
-            System.out.println("Login confirmado com sucesso!");
+            System.out.println("\n[SERVIDOR]: Login confirmado com sucesso!");
             return true;
         }else
-            System.out.println("Erro ao confirmar o login!");
+            System.out.println("\n[SERVIDOR]: Erro ao confirmar o login!");
         return false;
     }
 
@@ -178,10 +171,11 @@ public class ServerChatUDP extends javax.swing.JPanel {
                 enviar = new DatagramPacket(mensagemStr.getBytes(), mensagemStr.getBytes().length,
                         InetAddress.getByName(ip), porta);
                 serverDatagram.send(enviar);
+                System.out.println("\n[SERVIDOR]: Mensagem enviada: "+mensagemStr);
             }
 
         } catch (Exception e) {
-            System.out.println("Deu pau no enviarMensagem!!!!\n" + e);
+            System.out.println("\n[SERVIDOR]: Erro no método enviarMensagem!!!!\n" + e);
 
             return false;
         }

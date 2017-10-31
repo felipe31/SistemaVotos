@@ -19,7 +19,7 @@ public class Cliente {
     public Cliente() {
     }
 
-    public Cliente(String nome, String ra, String porta, String ip) {
+    public Cliente(String nome, String ra, String ip, String porta) {
         this.nome = nome;
         this.ra = ra;
         this.porta = porta;
