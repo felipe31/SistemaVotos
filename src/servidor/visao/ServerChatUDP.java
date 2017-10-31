@@ -16,6 +16,8 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import org.json.JSONObject;
+import servidor.controller.BancoClienteSingleton;
+import servidor.vo.Cliente;
 
 /**
  *
@@ -70,7 +72,11 @@ public class ServerChatUDP extends javax.swing.JPanel {
                         {
                             case 0:
                                 System.out.println("Login");
-                                addConexao((String) jSONObject.get("ra"), ip, receivePkt.getPort());
+                                if(verificaLogin(jSONObject.getString("ra"))!= null){
+                                    addConexao((String) jSONObject.get("ra"), ip, receivePkt.getPort());
+                                }else{
+                                    JOptionPane.showMessageDialog(frame, "Usuário incorreto");
+                                }
                                 break;
                                 
                         }
@@ -92,8 +98,14 @@ public class ServerChatUDP extends javax.swing.JPanel {
             e.printStackTrace();
         }
     }
-
+    
     // PROCESSAMENTO DOS DATAGRAMAS RECEBIDOS
+    
+    private Cliente verificaLogin(String ra){
+        BancoClienteSingleton bancoCliente = BancoClienteSingleton.getInstance();
+        return bancoCliente.getCliente(ra);
+    }
+    
     private void removeConexao(String ip, int porta) {
         int idx = encontraIndice(clientesConectados, ip, porta);
         JOptionPane.showMessageDialog(frame, idx);
