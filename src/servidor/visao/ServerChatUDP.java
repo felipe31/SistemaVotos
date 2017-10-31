@@ -72,13 +72,20 @@ public class ServerChatUDP extends javax.swing.JPanel {
                         {
                             case 0:
                                 System.out.println("Login");
-                                if(verificaLogin(jSONObject.getString("ra"))!= null){
+                                if(verificaLogin(jSONObject.getString("ra"), jSONObject.getString("senha"))!= null){
                                     addConexao((String) jSONObject.get("ra"), ip, receivePkt.getPort());
+                                    confimarLogin(jSONObject, ip, receivePkt.getPort());
                                 }else{
-                                    JOptionPane.showMessageDialog(frame, "Usuário incorreto");
+                                    System.out.println("Usuário incorreto tentou se conectar.");
                                 }
                                 break;
-                                
+                            case 10:
+                                System.out.println("Login");
+                                removeConexao(ip, receivePkt.getPort());
+                                break;
+                            default:
+                                System.out.println("Datagrama não suportado");
+
                         }
                         Thread.sleep(1000);
                     }
@@ -101,19 +108,25 @@ public class ServerChatUDP extends javax.swing.JPanel {
     
     // PROCESSAMENTO DOS DATAGRAMAS RECEBIDOS
     
-    private Cliente verificaLogin(String ra){
+    // Retorna login se login for válido
+    // null se não for válido
+    private Cliente verificaLogin(String ra, String senha){
         BancoClienteSingleton bancoCliente = BancoClienteSingleton.getInstance();
-        return bancoCliente.getCliente(ra);
+        Cliente cliente = bancoCliente.getCliente(ra);
+        System.out.println(cliente.getSenha()+"\n"+senha);
+        if(cliente.getSenha().equals(senha))
+            return cliente;
+        
+        return null;
     }
     
     private void removeConexao(String ip, int porta) {
         int idx = encontraIndice(clientesConectados, ip, porta);
-        JOptionPane.showMessageDialog(frame, idx);
         if (idx > -1) {
             table.removeRow(idx);
             clientesConectados.remove(idx);
-
-            enviaListaConectados("999.999.999.999", 99999);
+            // Precisa atualizar os outros conectados
+//            enviaListaConectados("999.999.999.999", 99999);
             //mandar datagrama 2 para todos os conectados
 
         }
@@ -122,7 +135,6 @@ public class ServerChatUDP extends javax.swing.JPanel {
     private void addConexao(String ra, String ip, int porta) {
         table.addRow(new Object[]{ra, ip, porta});
         clientesConectados.add(new String[]{ra, ip, String.valueOf(porta)});
-        confimarLogin(ip, porta);
         //  enviaListaConectados("999.999.999.999", 99999);
         //mandar datagrama 2 para todos os conectados
     }
@@ -140,10 +152,13 @@ public class ServerChatUDP extends javax.swing.JPanel {
         return false;
     }
 
-    protected boolean confimarLogin(String ip, int porta) {
+    protected boolean confimarLogin(JSONObject json, String ip, int porta) {
+        BancoClienteSingleton bancoCliente = BancoClienteSingleton.getInstance();
+        
         JSONObject obj = new JSONObject();
+        
         obj.put("tipo", 2);
-        obj.put("nome", "sucess");
+        obj.put("nome", bancoCliente.getCliente(json.getString("ra")).getNome());
         obj.put("tamanho", 0);
 
         String mensagemStr = obj.toString();

@@ -7,6 +7,8 @@ package cliente.visao;
 
 import cliente.vo.Cliente;
 import java.awt.Toolkit;
+import javax.swing.JOptionPane;
+import org.json.JSONObject;
 import servidor.visao.*;
 
 /**
@@ -15,6 +17,7 @@ import servidor.visao.*;
  */
 public class Home extends javax.swing.JFrame {
     Cliente cliente = null;
+    cliente.controller.Login loginCtrl = null;
 
     /**
      * Creates new form Home
@@ -23,11 +26,12 @@ public class Home extends javax.swing.JFrame {
         initComponents();
         setLocation(Toolkit.getDefaultToolkit().getScreenSize().width/2-this.getSize().width/2, Toolkit.getDefaultToolkit().getScreenSize().height/2-this.getSize().height/2);
     }
-    public Home(Cliente cliente) {
+    public Home(Cliente cliente, cliente.controller.Login loginCtrl) {
         initComponents();
         setLocation(Toolkit.getDefaultToolkit().getScreenSize().width/2-this.getSize().width/2, Toolkit.getDefaultToolkit().getScreenSize().height/2-this.getSize().height/2);
         this.cliente = cliente;
         jLabelBemVindo.setText("Seja bem-vindo, "+cliente.getNome());
+        this.loginCtrl = loginCtrl;
     }
     /**
      * This method is called from within the constructor to initialize the form.
@@ -39,10 +43,18 @@ public class Home extends javax.swing.JFrame {
     private void initComponents() {
 
         jLabelBemVindo = new javax.swing.JLabel();
+        jButtonSair = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jLabelBemVindo.setText("Seja bem vindo, Teste!");
+
+        jButtonSair.setText("Sair");
+        jButtonSair.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonSairActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -50,7 +62,9 @@ public class Home extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabelBemVindo)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabelBemVindo)
+                    .addComponent(jButtonSair))
                 .addContainerGap(253, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -58,11 +72,27 @@ public class Home extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabelBemVindo)
-                .addContainerGap(278, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 240, Short.MAX_VALUE)
+                .addComponent(jButtonSair)
+                .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jButtonSairActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSairActionPerformed
+        
+        if(loginCtrl.Deslogar()){
+            new Login().setVisible(true);
+            this.dispose();
+            JOptionPane.showMessageDialog(this, "Logout realizado com sucesso!",
+                "Sucesso no Logout", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(this, "Erro ao realizar o logout!\nTente novamente.",
+                "Erro!", JOptionPane.ERROR_MESSAGE);
+        }
+        
+    }//GEN-LAST:event_jButtonSairActionPerformed
 
     /**
      * @param args the command line arguments
@@ -101,6 +131,7 @@ public class Home extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButtonSair;
     private javax.swing.JLabel jLabelBemVindo;
     // End of variables declaration//GEN-END:variables
 }

@@ -58,7 +58,16 @@ public class Login {
         }
         return null;
     }
+    
+    public boolean Deslogar() {
+        JSONObject json = new JSONObject();
+        json.put("tipo", 10);
+        return enviarJSON(json);
+    }
+    
 
+    
+    // Métodos de envio/recepção JSON
     private JSONObject receberJSON() {
         recebimentoThread = new Thread(() -> {
             try{

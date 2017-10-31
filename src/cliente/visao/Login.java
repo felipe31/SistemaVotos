@@ -58,6 +58,8 @@ public class Login extends javax.swing.JFrame {
             }
         });
 
+        jTextFieldLogin.setText("1600001");
+
         jLabelLogin.setText("Login");
 
         jLabelSenha.setText("Senha");
@@ -69,6 +71,8 @@ public class Login extends javax.swing.JFrame {
         jTextFieldPorta.setText("20000");
 
         jLabelPorta.setText("Porta");
+
+        jPasswordFieldSenha.setText("12345");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -145,7 +149,7 @@ public class Login extends javax.swing.JFrame {
                 if(jsonObj != null){
                     cliente.setNome(jsonObj.getString("nome"));
                     
-                    new Home(cliente).setVisible(true);
+                    new Home(cliente, loginCtrl).setVisible(true);
                     this.dispose();
                     JOptionPane.showMessageDialog(this, "Sucesso no Login",
                             "Login realizado com sucesso!", JOptionPane.INFORMATION_MESSAGE);

@@ -11,16 +11,46 @@ package servidor.vo;
  */
 public class Cliente {
     
-    String nome;
-    String ra;
-    String ip;
-    String porta;
+    private String nome;
+    private String ra;
+    private String ip;
+    private String porta;
+    private String senha;
 
-    public Cliente(String nome, String ra, String ip, String porta) {
+    public String getSenha() {
+        return senha;
+    }
+
+    public void setSenha(String senha) {
+        this.senha = senha;
+    }
+
+    public String getCurso() {
+        return curso;
+    }
+
+    public void setCurso(String curso) {
+        this.curso = curso;
+    }
+
+    public String getPeriodo() {
+        return periodo;
+    }
+
+    public void setPeriodo(String periodo) {
+        this.periodo = periodo;
+    }
+    private String curso;
+    private String periodo;
+
+    public Cliente(String nome, String ra, String senha, String curso, String periodo, String ip, String porta) {
         this.nome = nome;
         this.ra = ra;
         this.ip = ip;
         this.porta = porta;
+        this.senha = senha;
+        this.curso = curso ;
+        this.periodo = periodo;
     }
 
     public Cliente() {
