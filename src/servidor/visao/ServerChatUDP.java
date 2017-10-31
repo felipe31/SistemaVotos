@@ -17,6 +17,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import org.json.JSONObject;
 import servidor.controller.BancoClienteSingleton;
+import servidor.controller.BancoSalasSingleton;
 import servidor.vo.Cliente;
 
 /**
@@ -32,6 +33,8 @@ public class ServerChatUDP extends javax.swing.JPanel {
     private byte[] buffer = null;
     private Thread execServidor;
     private DatagramSocket serverDatagram = null;
+    BancoClienteSingleton bancoCliente = BancoClienteSingleton.getInstance();
+    BancoSalasSingleton bancoSala = BancoSalasSingleton.getInstance();
 
     private ServerChatUDP() {
         initComponents();
@@ -75,6 +78,7 @@ public class ServerChatUDP extends javax.swing.JPanel {
                                 if(verificaLogin(jSONObject.getString("ra"), jSONObject.getString("senha"))!= null){
                                     addConexao((String) jSONObject.get("ra"), ip, receivePkt.getPort());
                                     confimarLogin(jSONObject, ip, receivePkt.getPort());
+                                    enviarListaSalas(ip, receivePkt.getPort());
                                 }else{
                                     System.out.println("Usuário incorreto tentou se conectar.");
                                 }
@@ -108,10 +112,47 @@ public class ServerChatUDP extends javax.swing.JPanel {
     
     // PROCESSAMENTO DOS DATAGRAMAS RECEBIDOS
     
+    //OOOOOLD AINDA NAO ALTERADO DO CHAT
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    private void encaminharMensagem(String[] mensagem, String ip, int porta) {
+
+        enviarMensagem("4#" + ip + "#" + porta + "#" + mensagem[3], mensagem[1], Integer.parseInt(mensagem[2]));
+
+    }
+
+    private boolean isBroadcast(String ip, String porta) {
+        if (ip.equals("999.999.999.999") && porta.equals("99999")) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean enviaListaConectados(String ip, int porta) {
+        String mensagem = "";
+
+        mensagem += clientesConectados.stream().map((str) -> "#" + str[1] + "#" + str[2] + "#" + str[0]).reduce(mensagem + "2", String::concat);
+
+        if (!enviarMensagem(mensagem, ip, porta)) {
+            return false;
+        }
+
+        return true;
+    }
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    
+    
+    private void enviarListaSalas(String ip, int porta){
+        JSONObject json;
+        
+        for(int i = 0; i < bancoSala.getQtdSalas(); i++){
+            json = new JSONObject();
+            json.put("tipo", 11);
+        }
+    }
+    
     // Retorna login se login for válido
     // null se não for válido
     private Cliente verificaLogin(String ra, String senha){
-        BancoClienteSingleton bancoCliente = BancoClienteSingleton.getInstance();
         Cliente cliente = bancoCliente.getCliente(ra);
         System.out.println(cliente.getSenha()+"\n"+senha);
         if(cliente.getSenha().equals(senha))
@@ -138,28 +179,15 @@ public class ServerChatUDP extends javax.swing.JPanel {
         //  enviaListaConectados("999.999.999.999", 99999);
         //mandar datagrama 2 para todos os conectados
     }
-
-    private void encaminharMensagem(String[] mensagem, String ip, int porta) {
-
-        enviarMensagem("4#" + ip + "#" + porta + "#" + mensagem[3], mensagem[1], Integer.parseInt(mensagem[2]));
-
-    }
-
-    private boolean isBroadcast(String ip, String porta) {
-        if (ip.equals("999.999.999.999") && porta.equals("99999")) {
-            return true;
-        }
-        return false;
-    }
-
+    
     protected boolean confimarLogin(JSONObject json, String ip, int porta) {
-        BancoClienteSingleton bancoCliente = BancoClienteSingleton.getInstance();
+        
         
         JSONObject obj = new JSONObject();
         
         obj.put("tipo", 2);
         obj.put("nome", bancoCliente.getCliente(json.getString("ra")).getNome());
-        obj.put("tamanho", 0);
+        obj.put("tamanho", bancoSala.getQtdSalas());
 
         String mensagemStr = obj.toString();
         
@@ -169,18 +197,6 @@ public class ServerChatUDP extends javax.swing.JPanel {
         }else
             System.out.println("\n[SERVIDOR]: Erro ao confirmar o login!");
         return false;
-    }
-
-    public boolean enviaListaConectados(String ip, int porta) {
-        String mensagem = "";
-
-        mensagem += clientesConectados.stream().map((str) -> "#" + str[1] + "#" + str[2] + "#" + str[0]).reduce(mensagem + "2", String::concat);
-
-        if (!enviarMensagem(mensagem, ip, porta)) {
-            return false;
-        }
-
-        return true;
     }
 
     private boolean enviarMensagem(String mensagemStr, String ip, int porta) {

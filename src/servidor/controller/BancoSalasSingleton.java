@@ -5,16 +5,54 @@
  */
 package servidor.controller;
 
+import cliente.vo.Sala;
+import java.util.ArrayList;
+import org.json.JSONObject;
+
 /**
  *
  * @author felipesoares
  */
-public class BancoSalasSingleton {
+public final class BancoSalasSingleton {
 
-    private BancoSalasSingleton instance = new BancoSalasSingleton();
+    private static final BancoSalasSingleton instance = new BancoSalasSingleton();
     private BancoSalasSingleton() {
-        
+        int i = 0;
+        JSONObject json = new JSONObject();
+        json.put("crypt", 15);
+        json.put("graphs", 16);
+        addSala(new Sala(String.valueOf(i), "1600001", "Crypt X Graphs"+i++, 
+                "Discussão para decidir disciplina para o próximo semestre letivo",
+                json));
+        addSala(new Sala(String.valueOf(i), "1600001", "Crypt X Graphs"+i++, 
+                "Discussão para decidir disciplina para o próximo semestre letivo",
+                json));
+        addSala(new Sala(String.valueOf(i), "1600001", "Crypt X Graphs"+i++, 
+                "Discussão para decidir disciplina para o próximo semestre letivo",
+                json));
+        addSala(new Sala(String.valueOf(i), "1600001", "Crypt X Graphs"+i++, 
+                "Discussão para decidir disciplina para o próximo semestre letivo",
+                json));
     }
-    public BancoSalasSingleton getInstance(){ return instance;}
- 
+    public static BancoSalasSingleton getInstance(){ return instance;}
+
+    private final ArrayList<Sala> bancoSala = new ArrayList<>();
+    
+    public void addSala(Sala sala){
+        bancoSala.add(sala);
+    }
+    
+    public ArrayList<Sala> getBancoSala(){
+        return bancoSala;
+    }
+    public Sala getCliente(String ra){
+        for(Sala c : bancoSala){
+            if(c.getId().equals(ra))
+                return c;
+        }
+        return null;
+    }
+    public int getQtdSalas(){
+        return bancoSala.size();
+    }
 }
