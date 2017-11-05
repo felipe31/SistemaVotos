@@ -44,7 +44,7 @@ public class Login {
         JSONObject obj = new JSONObject();
         obj.put("tipo", 0);
         obj.put("ra", cliente.getRa());
-        obj.put("senha", new String(hashedPwd));
+        obj.put("senha", hashedPwd);
         try {
             clientSocket = new DatagramSocket();
         } catch (SocketException ex) {

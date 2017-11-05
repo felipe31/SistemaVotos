@@ -9,6 +9,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Arrays;
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -75,7 +76,7 @@ public class ServerChatUDP extends javax.swing.JPanel {
                         {
                             case 0:
                                 System.out.println("Login");
-                                if(verificaLogin(jSONObject.getString("ra"), jSONObject.getString("senha"))!= null){
+                                if(verificaLogin(jSONObject.getString("ra"), jSONObject.get("senha").toString())!= null){
                                     addConexao((String) jSONObject.get("ra"), ip, receivePkt.getPort());
                                     confimarLogin(jSONObject, ip, receivePkt.getPort());
                                     enviarListaSalas(ip, receivePkt.getPort());
@@ -153,8 +154,10 @@ public class ServerChatUDP extends javax.swing.JPanel {
     // Retorna login se login for válido
     // null se não for válido
     private Cliente verificaLogin(String ra, String senha){
+      
         Cliente cliente = bancoCliente.getCliente(ra);
         System.out.println(cliente.getSenha()+"\n"+senha);
+       //   Arrays.toString(senha).replace(" ","").equals(json.get("senha").toString());
         if(cliente.getSenha().equals(senha))
             return cliente;
         

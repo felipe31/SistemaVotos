@@ -9,6 +9,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import servidor.vo.Cliente;
 
 /**
@@ -22,7 +23,8 @@ public final class BancoClienteSingleton {
         try{
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] hash = digest.digest("12345".getBytes(StandardCharsets.UTF_8));
-            String senha = new String(hash);
+            String replace = Arrays.toString(hash).replace(" ","");
+            String senha = replace;
             addCliente(new Cliente("Cauê Felchar", "1687638", senha, "Ciência da Computação", "8", "", ""));
             addCliente(new Cliente("Vithor Tozetto Ferreira", "1687824", senha, "Ciência da computação", "7", "", ""));
             addCliente(new Cliente("Felipe Soares", "1600001", senha, "Ciência da Computação", "8", "", ""));
