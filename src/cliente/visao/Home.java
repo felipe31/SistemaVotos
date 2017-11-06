@@ -7,7 +7,11 @@ package cliente.visao;
 
 import cliente.vo.Cliente;
 import java.awt.Toolkit;
+import javax.swing.DefaultListSelectionModel;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+import javax.swing.table.DefaultTableModel;
 import org.json.JSONObject;
 import servidor.visao.*;
 
@@ -16,8 +20,11 @@ import servidor.visao.*;
  * @author Samsung
  */
 public class Home extends javax.swing.JFrame {
-    Cliente cliente = null;
-    cliente.controller.Login loginCtrl = null;
+    private Cliente cliente = null;
+    private cliente.controller.Login loginCtrl = null;
+    private int qtdSalas;
+    private cliente.controller.Home homeCtrl = null;
+    private DefaultTableModel salasTabela;
 
     /**
      * Creates new form Home
@@ -26,13 +33,35 @@ public class Home extends javax.swing.JFrame {
         initComponents();
         setLocation(Toolkit.getDefaultToolkit().getScreenSize().width/2-this.getSize().width/2, Toolkit.getDefaultToolkit().getScreenSize().height/2-this.getSize().height/2);
     }
-    public Home(Cliente cliente, cliente.controller.Login loginCtrl) {
+    
+    public Home(Cliente cliente, cliente.controller.Login loginCtrl, int qtdSalas) {
         initComponents();
         setLocation(Toolkit.getDefaultToolkit().getScreenSize().width/2-this.getSize().width/2, Toolkit.getDefaultToolkit().getScreenSize().height/2-this.getSize().height/2);
         this.cliente = cliente;
         jLabelBemVindo.setText("Seja bem-vindo, "+cliente.getNome());
         this.loginCtrl = loginCtrl;
+        this.qtdSalas = qtdSalas;
+        
+        salasTabela = iniciaJTable(jTableSalas);
+        homeCtrl = new cliente.controller.Home(cliente, loginCtrl.getClientSocket(), salasTabela, qtdSalas);
+//        homeCtrl.recebeSalas();
+
+        
     }
+    
+    private DefaultTableModel iniciaJTable(JTable table) {
+        DefaultListSelectionModel selectionModel = new DefaultListSelectionModel();
+        selectionModel.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        table.setSelectionModel(selectionModel);
+
+        DefaultTableModel tableModel = (DefaultTableModel) table.getModel();
+        
+        tableModel.setColumnIdentifiers(new Object[]{"Nome", "Descrição", "Status"});
+        tableModel.setNumRows(0);
+        
+        return tableModel;
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -44,6 +73,9 @@ public class Home extends javax.swing.JFrame {
 
         jLabelBemVindo = new javax.swing.JLabel();
         jButtonSair = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTableSalas = new javax.swing.JTable();
+        jButtonCriarSala = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -56,6 +88,34 @@ public class Home extends javax.swing.JFrame {
             }
         });
 
+        jTableSalas.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane1.setViewportView(jTableSalas);
+
+        jButtonCriarSala.setText("Criar sala");
+        jButtonCriarSala.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonCriarSalaActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -64,17 +124,25 @@ public class Home extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabelBemVindo)
-                    .addComponent(jButtonSair))
-                .addContainerGap(253, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 375, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jButtonCriarSala)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButtonSair)))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabelBemVindo)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 240, Short.MAX_VALUE)
-                .addComponent(jButtonSair)
-                .addContainerGap())
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButtonSair)
+                    .addComponent(jButtonCriarSala))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -93,6 +161,12 @@ public class Home extends javax.swing.JFrame {
         }
         
     }//GEN-LAST:event_jButtonSairActionPerformed
+
+    private void jButtonCriarSalaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCriarSalaActionPerformed
+        CriaSala novaSala = new CriaSala(homeCtrl);
+        novaSala.setVisible(true);
+        
+    }//GEN-LAST:event_jButtonCriarSalaActionPerformed
 
     /**
      * @param args the command line arguments
@@ -131,7 +205,10 @@ public class Home extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButtonCriarSala;
     private javax.swing.JButton jButtonSair;
     private javax.swing.JLabel jLabelBemVindo;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTable jTableSalas;
     // End of variables declaration//GEN-END:variables
 }

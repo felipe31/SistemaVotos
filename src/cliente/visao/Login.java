@@ -142,14 +142,14 @@ public class Login extends javax.swing.JFrame {
                 MessageDigest digest = MessageDigest.getInstance("SHA-256");
                 byte[] hash = digest.digest(String.valueOf(jPasswordFieldSenha.getPassword()).getBytes(StandardCharsets.UTF_8));
                 
-                // Solicita Login
+                // Solicita Login e retorna o datagrama 2
                 JSONObject jsonObj = loginCtrl.Logar(cliente, hash);
 
                 // Confere login
                 if(jsonObj != null){
                     cliente.setNome(jsonObj.getString("nome"));
                     
-                    new Home(cliente, loginCtrl).setVisible(true);
+                    new Home(cliente, loginCtrl, jsonObj.getInt("tamanho")).setVisible(true);
                     this.dispose();
                     JOptionPane.showMessageDialog(this, "Sucesso no Login",
                             "Login realizado com sucesso!", JOptionPane.INFORMATION_MESSAGE);

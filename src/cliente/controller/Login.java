@@ -25,12 +25,13 @@ import org.json.JSONObject;
 public class Login {
 
     private Cliente cliente;
-    private Thread rxMensagensThread;
     private DatagramSocket clientSocket = null;
-    private Boolean conexaoAceita;    
-    private Thread recebimentoThread = null;
-    private JSONObject jsonThread = null;
 
+    public DatagramSocket getClientSocket() {
+        return clientSocket;
+    }
+    private Json jsonOp = new Json();
+    
     public static void main(String[] args) {
         new Login();
     }
@@ -50,8 +51,8 @@ public class Login {
         } catch (SocketException ex) {
             Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
         }
-        if(enviarJSON(obj)){
-            JSONObject jsonObj = receberJSON();
+        if(jsonOp.enviarJSON(obj, clientSocket, cliente.getIp(), cliente.getPorta())){
+            JSONObject jsonObj = jsonOp.receberJSON(clientSocket, cliente.getIp(), cliente.getPorta());
             if(jsonObj != null){
                 return jsonObj;
             }
@@ -62,57 +63,7 @@ public class Login {
     public boolean Deslogar() {
         JSONObject json = new JSONObject();
         json.put("tipo", 10);
-        return enviarJSON(json);
-    }
-    
-
-    
-    // Métodos de envio/recepção JSON
-    private JSONObject receberJSON() {
-        recebimentoThread = new Thread(() -> {
-            try{
-                DatagramPacket mensagemPkt = new DatagramPacket(new byte[10000], 10000, InetAddress.getByName(cliente.getIp()), Integer.parseInt(cliente.getPorta()));
-                mensagemPkt.setData(new byte[10000]);
-                clientSocket.receive(mensagemPkt);
-                String receiveStr = new String(mensagemPkt.getData());
-                receiveStr = receiveStr.trim();
-                JSONObject jsonObj = new JSONObject(receiveStr);
-                System.out.println("\n[CLIENTE]: Mensagem recebida: "+jsonObj.toString());
-                jsonThread = jsonObj;
-            }catch(UnknownHostException ex) {
-                Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (SocketException e){
-                Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, e);
-            } catch (IOException e){
-                Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, e);
-            }
-                
-        });
-        
-        recebimentoThread.start();
-        try{
-            Thread.sleep(100);
-        } catch (InterruptedException e){
-            Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, e);
-        }
-        recebimentoThread.interrupt();
-        return jsonThread;
-    }
-
-    public boolean enviarJSON(JSONObject obj) {
-        try {
-
-            String mensagemStr = obj.toString();
-            byte[] messageByte = mensagemStr.getBytes();
-
-            DatagramPacket packet = new DatagramPacket(messageByte, messageByte.length, InetAddress.getByName(cliente.getIp()), Integer.parseInt(cliente.getPorta()));
-            System.out.println("[CLIENTE]: Mensagem a ser enviada: "+mensagemStr);
-            clientSocket.send(packet);
-            System.out.println("\n[CLIENTE]: Mensagem enviada com sucesso!\n");
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
+        return jsonOp.enviarJSON(json, clientSocket, cliente.getIp(), cliente.getPorta());
     }
 
 }
