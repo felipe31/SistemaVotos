@@ -5,21 +5,23 @@
  */
 package servidor.visao;
 
+import servidor.vo.Sala;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Iterator;
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import servidor.controller.BancoClienteSingleton;
 import servidor.controller.BancoSalasSingleton;
 import servidor.vo.Cliente;
+import servidor.vo.Voto;
 
 /**
  *
@@ -46,46 +48,68 @@ public class ServerChatUDP extends javax.swing.JPanel {
 
         try {
 
-
             serverDatagram = new DatagramSocket(20000);
-            
+
             execServidor = new Thread(() -> {
-                serverTextArea.setText("[SERVIDOR]: Servidor iniciado na porta "+serverDatagram.getLocalPort()+"\n");
+                serverTextArea.setText("[SERVIDOR]: Servidor iniciado na porta " + serverDatagram.getLocalPort() + "\n");
 
                 try {
-                    
+
                     while (true) {
                         buffer = new byte[1024];
                         receivePkt = new DatagramPacket(buffer, buffer.length);
                         serverDatagram.receive(receivePkt);
-                        
+
                         String receiveStr = new String(receivePkt.getData());
-                        
+
                         receiveStr = receiveStr.trim();
-                        
+
                         serverTextArea.setText(serverTextArea.getText() + "\n"
                                 + receivePkt.getAddress().toString().split("/")[1] + ":"
                                 + receivePkt.getPort() + "\n" + receiveStr);
-                        
-                        System.out.println("\n[SERVIDOR]: Mensagem recebida: "+receiveStr);
-                        
+
+                        System.out.println("\n[SERVIDOR]: Mensagem recebida: " + receiveStr);
+
                         JSONObject jSONObject = new JSONObject(receiveStr);
                         String ip = receivePkt.getAddress().toString().split("/")[1];
-                        
-                        switch ((int)jSONObject.get("tipo"))
-                        {
+
+                        switch ((int) jSONObject.get("tipo")) {
                             case 0:
                                 System.out.println("Login");
-                                if(verificaLogin(jSONObject.getString("ra"), jSONObject.get("senha").toString())!= null){
+                                if (verificaLogin(jSONObject.getString("ra"), jSONObject.get("senha").toString()) != null) {
                                     addConexao((String) jSONObject.get("ra"), ip, receivePkt.getPort());
                                     confimarLogin(jSONObject, ip, receivePkt.getPort());
                                     enviarListaSalas(ip, receivePkt.getPort());
-                                }else{
+                                } else {
                                     System.out.println("Usuário incorreto tentou se conectar.");
                                 }
                                 break;
+                                
+                                
+                            case 3:
+                                //criar sala
+                                BancoSalasSingleton bancoSalasSingleton = BancoSalasSingleton.getInstance();
+                                ArrayList<Voto> opcoes = new ArrayList<>();
+                                
+                                JSONArray jArray = jSONObject.getJSONArray( "opcoes" );
+                                System.out.println(jArray);
+                                
+                                Iterator it = jArray.iterator();
+                                while(it.hasNext())
+                                {
+                                    JSONObject jsono = (JSONObject) it.next();
+                                    Voto voto = new Voto(jsono.getString("nome"));
+                                    System.out.println(jsono.get("nome"));
+                                    opcoes.add(voto);
+                                }
+                                                                
+                                bancoSalasSingleton.criarSala(jSONObject.getString("criador"),jSONObject.getString("nome"), jSONObject.getString("descricao"), jSONObject.getString("fim"), opcoes);                               
+                               
+                                break;
+
                             case 10:
-                                System.out.println("Login");
+                                //logout
+                                System.out.println("Logout");
                                 removeConexao(ip, receivePkt.getPort());
                                 break;
                             default:
@@ -110,9 +134,8 @@ public class ServerChatUDP extends javax.swing.JPanel {
             e.printStackTrace();
         }
     }
-    
+
     // PROCESSAMENTO DOS DATAGRAMAS RECEBIDOS
-    
     //OOOOOLD AINDA NAO ALTERADO DO CHAT
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     private void encaminharMensagem(String[] mensagem, String ip, int porta) {
@@ -140,30 +163,49 @@ public class ServerChatUDP extends javax.swing.JPanel {
         return true;
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    
-    
-    private void enviarListaSalas(String ip, int porta){
-        JSONObject json;
-        
-        for(int i = 0; i < bancoSala.getQtdSalas(); i++){
+
+    private void enviarListaSalas(String ip, int porta) {
+
+        Iterator it = bancoSala.getBancoSala().iterator();
+        while (it.hasNext()) {
+            Sala sala = (Sala) it.next();
+            JSONObject json;
             json = new JSONObject();
+            
             json.put("tipo", 11);
+            json.put("id", sala.getId());
+            json.put("nome", sala.getNome());
+            json.put("descricao", sala.getDescricao());
+            json.put("criador", sala.getCriador());
+            json.put("inicio", sala.getInicio());
+            json.put("fim", sala.getFim());
+            json.put("status", sala.getStatus());
+            json.put("mensagens", sala.getMensagens());
+            
+            String mensagemStr = json.toString();
+            enviarMensagem(mensagemStr, ip, porta);
+            
+            System.out.println("ip: " +ip);
+            System.out.println("porta: " +porta);
+               
         }
     }
     
-    // Retorna login se login for válido
-    // null se não for válido
-    private Cliente verificaLogin(String ra, String senha){
-      
+    /**
+     * Retorna login se login for válido
+     * null se não for válido
+*/            private Cliente verificaLogin(String ra, String senha) {
+
         Cliente cliente = bancoCliente.getCliente(ra);
-        System.out.println(cliente.getSenha()+"\n"+senha);
-       //   Arrays.toString(senha).replace(" ","").equals(json.get("senha").toString());
-        if(cliente.getSenha().equals(senha))
+        System.out.println(cliente.getSenha() + "\n" + senha);
+        //   Arrays.toString(senha).replace(" ","").equals(json.get("senha").toString());
+        if (cliente.getSenha().equals(senha)) {
             return cliente;
-        
+        }
+
         return null;
     }
-    
+
     private void removeConexao(String ip, int porta) {
         int idx = encontraIndice(clientesConectados, ip, porta);
         if (idx > -1) {
@@ -182,23 +224,23 @@ public class ServerChatUDP extends javax.swing.JPanel {
         //  enviaListaConectados("999.999.999.999", 99999);
         //mandar datagrama 2 para todos os conectados
     }
-    
+
     protected boolean confimarLogin(JSONObject json, String ip, int porta) {
-        
-        
+
         JSONObject obj = new JSONObject();
-        
+
         obj.put("tipo", 2);
         obj.put("nome", bancoCliente.getCliente(json.getString("ra")).getNome());
         obj.put("tamanho", bancoSala.getQtdSalas());
 
         String mensagemStr = obj.toString();
-        
-        if(enviarMensagem(mensagemStr, ip, porta)){
+
+        if (enviarMensagem(mensagemStr, ip, porta)) {
             System.out.println("\n[SERVIDOR]: Login confirmado com sucesso!");
             return true;
-        }else
+        } else {
             System.out.println("\n[SERVIDOR]: Erro ao confirmar o login!");
+        }
         return false;
     }
 
@@ -217,7 +259,7 @@ public class ServerChatUDP extends javax.swing.JPanel {
                 enviar = new DatagramPacket(mensagemStr.getBytes(), mensagemStr.getBytes().length,
                         InetAddress.getByName(ip), porta);
                 serverDatagram.send(enviar);
-                System.out.println("\n[SERVIDOR]: Mensagem enviada: "+mensagemStr);
+                System.out.println("\n[SERVIDOR]: Mensagem enviada: " + mensagemStr);
             }
 
         } catch (Exception e) {
