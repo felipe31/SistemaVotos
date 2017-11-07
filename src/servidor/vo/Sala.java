@@ -5,10 +5,7 @@
  */
 package servidor.vo;
 
-import org.json.JSONObject;
-import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 /**
  *
@@ -19,20 +16,20 @@ public class Sala {
     private String criador;
     private String nome;
     private String descricao;
-    private final String id;
-    private Timestamp inicio;
-    private Timestamp fim;
+    private final int id;
+    private String inicio;
+    private String fim;
     private Boolean status = true;
     private int mensagens;
     private ArrayList<Voto> opcoes = new ArrayList<>();
 
-    public Sala(String id, String criador, String nome, String descricao, String fim, ArrayList<Voto> opcoes) {
+    public Sala(int id, String criador, String nome, String descricao, String fim, ArrayList<Voto> opcoes) {
         this.criador = criador;
         this.nome = nome;
         this.descricao = descricao;
         this.id = id;
-        this.inicio = new Timestamp(System.currentTimeMillis());
-        this.fim = Timestamp.valueOf(fim);;
+        this.inicio = String.valueOf(System.currentTimeMillis()/1000);
+        this.fim = String.valueOf(fim);
         this.mensagens = 0;
         this.opcoes = opcoes;
 
@@ -46,19 +43,19 @@ public class Sala {
         this.opcoes = opcoes;
     }
 
-    public Timestamp getInicio() {
+    public String getInicio() {
         return inicio;
     }
 
-    public void setInicio(Timestamp inicio) {
+    public void setInicio(String inicio) {
         this.inicio = inicio;
     }
 
-    public Timestamp getFim() {
+    public String getFim() {
         return fim;
     }
 
-    public void setFim(Timestamp fim) {
+    public void setFim(String fim) {
         this.fim = fim;
     }
 
@@ -115,7 +112,7 @@ public class Sala {
         this.descricao = descricao;
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 

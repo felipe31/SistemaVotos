@@ -5,8 +5,10 @@
  */
 package cliente.visao;
 
+import java.awt.Component;
 import java.awt.Toolkit;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.JOptionPane;
@@ -37,6 +39,7 @@ public class CriaSala extends javax.swing.JFrame {
     public CriaSala() {
         initComponents();
         setLocation(Toolkit.getDefaultToolkit().getScreenSize().width/2-this.getSize().width/2, Toolkit.getDefaultToolkit().getScreenSize().height/2-this.getSize().height/2);
+        opcoesTabela = iniciaJTable(jTableOpcoes);
     }
 
     public CriaSala(cliente.controller.Home homeCtrl) {
@@ -265,7 +268,10 @@ public class CriaSala extends javax.swing.JFrame {
     }//GEN-LAST:event_jButtonCancelarActionPerformed
 
     private void jButtonAddOpcaoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAddOpcaoActionPerformed
-        opcoesTabela.addRow(new Object[]{JOptionPane.showInputDialog("Digite o nome da opção")});
+        Object[] obj = new Object[]{JOptionPane.showInputDialog("Digite o nome da opção")};
+        if(obj[0] != null)
+            if(!obj[0].equals(""))
+                opcoesTabela.addRow(obj);
     }//GEN-LAST:event_jButtonAddOpcaoActionPerformed
 
     private void jButtonOkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonOkActionPerformed
@@ -273,8 +279,19 @@ public class CriaSala extends javax.swing.JFrame {
         jsonSala = new JSONObject();
         jsonSala.put("nome", jTextFieldNome.getText());
         jsonSala.put("descricao", jTextAreaDescricao.getText());
-        jsonSala.put("fim", jTextFieldAno.getText()+"-"+jTextFieldMes.getText()+"-"+jTextFieldDia.getText()+
+        Timestamp timestamp = null;
+        try {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
+            Date parsedDate = dateFormat.parse(jTextFieldAno.getText()+"-"+jTextFieldMes.getText()+"-"+jTextFieldDia.getText()+
                 " "+jTextFieldHoras.getText()+":"+jTextFieldMinutos.getText()+":"+jTextFieldSegundos.getText()+".000");
+            timestamp = new Timestamp(parsedDate.getTime());
+        } catch(Exception e) { //this generic but you can control another types of exception
+            // look the origin of excption 
+        }
+        
+        
+        
+        jsonSala.put("fim", String.valueOf(timestamp.getTime()/1000));
         //itens venda
         JSONArray jsonArrayOpcoes = new JSONArray();
         for(int i = 0; i < opcoesTabela.getRowCount(); i++){

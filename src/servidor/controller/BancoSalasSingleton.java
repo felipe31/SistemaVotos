@@ -5,7 +5,6 @@
  */
 package servidor.controller;
 
-import java.sql.Timestamp;
 import servidor.vo.Sala;
 import java.util.ArrayList;
 import org.json.JSONObject;
@@ -38,17 +37,17 @@ public final class BancoSalasSingleton {
         JSONObject json = new JSONObject();
         json.put("crypt", 15);
         json.put("graphs", 16);
-        addSala(new Sala(String.valueOf(i), "1600001", "Crypt X Graphs" + i++, "Discussão para decidir disciplina para o próximo semestre letivo",
-                String.valueOf(new Timestamp(System.currentTimeMillis())), opcoes));
+        addSala(new Sala(i, "1600001", "Crypt X Graphs" + i++, "Discussão para decidir disciplina para o próximo semestre letivo",
+                String.valueOf(System.currentTimeMillis()/1000), opcoes));
 
-        addSala(new Sala(String.valueOf(i), "1600001", "Crypt X Graphs" + i++, "Discussão para decidir disciplina para o próximo semestre letivo",
-                String.valueOf(new Timestamp(System.currentTimeMillis())), opcoes));
+        addSala(new Sala(i, "1600001", "Crypt X Graphs" + i++, "Discussão para decidir disciplina para o próximo semestre letivo",
+                String.valueOf(System.currentTimeMillis()/1000), opcoes));
 
-        addSala(new Sala(String.valueOf(i), "1600001", "Crypt X Graphs" + i++, "Discussão para decidir disciplina para o próximo semestre letivo",
-                String.valueOf(new Timestamp(System.currentTimeMillis())), opcoes));
+        addSala(new Sala(i, "1600001", "Crypt X Graphs" + i++, "Discussão para decidir disciplina para o próximo semestre letivo",
+                String.valueOf(System.currentTimeMillis()/1000), opcoes));
 
-        addSala(new Sala(String.valueOf(i), "1600001", "Crypt X Graphs" + i++, "Discussão para decidir disciplina para o próximo semestre letivo",
-                String.valueOf(new Timestamp(System.currentTimeMillis())), opcoes));
+        addSala(new Sala(i, "1600001", "Crypt X Graphs" + i++, "Discussão para decidir disciplina para o próximo semestre letivo",
+                String.valueOf(System.currentTimeMillis()/1000), opcoes));
     }
 
     public static BancoSalasSingleton getInstance() {
@@ -65,10 +64,10 @@ public final class BancoSalasSingleton {
         return bancoSala;
     }
 
-    public Sala getCliente(String ra) {
-        for (Sala c : bancoSala) {
-            if (c.getId().equals(ra)) {
-                return c;
+    public Sala getSala(int id) {
+        for (Sala s : bancoSala) {
+            if (s.getId()==id) {
+                return s;
             }
         }
         return null;
@@ -79,7 +78,7 @@ public final class BancoSalasSingleton {
     }
 
     public void criarSala(String ra, String nome, String descricao, String fim, ArrayList<Voto> opcoesx) {
-        addSala(new Sala(String.valueOf(i), ra, nome,
+        addSala(new Sala(i++, ra, nome,
                 descricao, fim, opcoesx));
 
     }

@@ -30,9 +30,9 @@ public final class BancoSalasSingleton {
     public ArrayList<Sala> getBancoSala(){
         return bancoSala;
     }
-    public Sala getCliente(String ra){
+    public Sala getCliente(int ra){
         for(Sala c : bancoSala){
-            if(c.getId().equals(ra))
+            if(c.getId()==ra)
                 return c;
         }
         return null;

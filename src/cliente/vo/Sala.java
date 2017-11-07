@@ -16,13 +16,13 @@ public class Sala {
     private String nome;
     private String descricao;
     private JSONObject votos;
-    private final String id;
+    private final int id;
     private final String inicio;
     private String fim;
     private boolean status;
     private int qtdMensagens;
     
-    public Sala(String id, String criador, String nome, String descricao, JSONObject votos, String inicio, String fim, boolean status, int qtdMensagens) {
+    public Sala(int id, String criador, String nome, String descricao, JSONObject votos, String inicio, String fim, boolean status, int qtdMensagens) {
         this.criador = criador;
         this.nome = nome;
         this.descricao = descricao;
@@ -66,7 +66,7 @@ public class Sala {
         this.votos = votos;
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
