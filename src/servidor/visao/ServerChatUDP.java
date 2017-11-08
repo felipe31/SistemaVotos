@@ -82,6 +82,9 @@ public class ServerChatUDP extends javax.swing.JPanel {
                                     enviarListaSalas(ip, receivePkt.getPort());
                                 } else {
                                     System.out.println("Usuário incorreto tentou se conectar.");
+                                    JSONObject json = new JSONObject();
+                                    json.put("tipo", 1);
+                                    enviarMensagem(json.toString(), ip, receivePkt.getPort());
                                 }
                                 break;
                                 
@@ -181,8 +184,9 @@ public class ServerChatUDP extends javax.swing.JPanel {
     private Cliente verificaLogin(String ra, String senha) {
 
         Cliente cliente = bancoCliente.getCliente(ra);
-        System.out.println(cliente.getSenha() + "\n" + senha);
         //   Arrays.toString(senha).replace(" ","").equals(json.get("senha").toString());
+        if(cliente == null) return null;
+        System.out.println(cliente.getSenha() + "\n" + senha);
         if (cliente.getSenha().equals(senha)) {
             return cliente;
         }
