@@ -77,9 +77,10 @@ public final class BancoSalasSingleton {
         return bancoSala.size();
     }
 
-    public void criarSala(String ra, String nome, String descricao, String fim, ArrayList<Voto> opcoesx) {
-        addSala(new Sala(i++, ra, nome,
-                descricao, fim, opcoesx));
-
+    public Sala criarSala(String ra, String nome, String descricao, String fim, ArrayList<Voto> opcoesx) {
+        Sala sala = new Sala(i++, ra, nome,
+                descricao, fim, opcoesx);
+        addSala(sala);
+        return sala;
     }
 }

@@ -99,12 +99,11 @@ public class ServerChatUDP extends javax.swing.JPanel {
                                 {
                                     JSONObject jsono = (JSONObject) it.next();
                                     Voto voto = new Voto(jsono.getString("nome"));
-                                    System.out.println(jsono.get("nome"));
                                     opcoes.add(voto);
                                 }
                                                                 
-                                bancoSalasSingleton.criarSala(jSONObject.getString("criador"),jSONObject.getString("nome"), jSONObject.getString("descricao"), jSONObject.getString("fim"), opcoes);                               
-                               
+                                enviaSalaBroadcast(bancoSalasSingleton.criarSala(jSONObject.getString("criador"),jSONObject.getString("nome"), jSONObject.getString("descricao"), jSONObject.getString("fim"), opcoes));   
+                                
                                 break;
 
                             case 10:
@@ -169,24 +168,8 @@ public class ServerChatUDP extends javax.swing.JPanel {
         Iterator it = bancoSala.getBancoSala().iterator();
         while (it.hasNext()) {
             Sala sala = (Sala) it.next();
-            JSONObject json;
-            json = new JSONObject();
             
-            json.put("tipo", 11);
-            json.put("id", sala.getId());
-            json.put("nome", sala.getNome());
-            json.put("descricao", sala.getDescricao());
-            json.put("criador", sala.getCriador());
-            json.put("inicio", sala.getInicio());
-            json.put("fim", sala.getFim());
-            json.put("status", sala.getStatus());
-            json.put("mensagens", sala.getMensagens());
-            
-            String mensagemStr = json.toString();
-            enviarMensagem(mensagemStr, ip, porta);
-            
-            System.out.println("ip: " +ip);
-            System.out.println("porta: " +porta);
+            enviaSala(sala, ip, porta);
                
         }
     }
@@ -194,7 +177,8 @@ public class ServerChatUDP extends javax.swing.JPanel {
     /**
      * Retorna login se login for válido
      * null se não for válido
-*/            private Cliente verificaLogin(String ra, String senha) {
+*/            
+    private Cliente verificaLogin(String ra, String senha) {
 
         Cliente cliente = bancoCliente.getCliente(ra);
         System.out.println(cliente.getSenha() + "\n" + senha);
@@ -249,6 +233,7 @@ public class ServerChatUDP extends javax.swing.JPanel {
         DatagramPacket enviar = null;
         try {
             if (isBroadcast(ip, String.valueOf(porta))) {
+                System.out.println("isBroadcast TRUE");
                 for (String[] str : clientesConectados) {
                     System.out.println(mensagemStr + "-" + str[1] + "-" + str[2]);
                     enviar = new DatagramPacket(mensagemStr.getBytes(), mensagemStr.getBytes().length,
@@ -377,5 +362,27 @@ public class ServerChatUDP extends javax.swing.JPanel {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTextArea serverTextArea;
     // End of variables declaration//GEN-END:variables
+
+    private void enviaSalaBroadcast(Sala sala) {
+        enviaSala(sala, "999.999.999.999", 99999);
+    }
+
+    private void enviaSala(Sala sala, String ip, int porta) {
+        JSONObject json;
+        json = new JSONObject();
+
+        json.put("tipo", 11);
+        json.put("id", sala.getId());
+        json.put("nome", sala.getNome());
+        json.put("descricao", sala.getDescricao());
+        json.put("criador", sala.getCriador());
+        json.put("inicio", sala.getInicio());
+        json.put("fim", sala.getFim());
+        json.put("status", sala.getStatus());
+        json.put("mensagens", sala.getMensagens());
+
+        String mensagemStr = json.toString();
+        enviarMensagem(mensagemStr, ip, porta);
+    }
 
 }
