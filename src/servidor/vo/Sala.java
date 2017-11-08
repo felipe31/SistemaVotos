@@ -13,7 +13,8 @@ import java.util.ArrayList;
  */
 public class Sala {
 
-    private String criador;
+    private String criador_ra;
+    private String criador_nome;
     private String nome;
     private String descricao;
     private final int id;
@@ -23,8 +24,9 @@ public class Sala {
     private int mensagens;
     private ArrayList<Voto> opcoes = new ArrayList<>();
 
-    public Sala(int id, String criador, String nome, String descricao, String fim, ArrayList<Voto> opcoes) {
-        this.criador = criador;
+    public Sala(int id, String criador_ra, String criador_nome, String nome, String descricao, String fim, ArrayList<Voto> opcoes) {
+        this.criador_ra = criador_ra;
+        this.criador_nome = criador_nome;
         this.nome = nome;
         this.descricao = descricao;
         this.id = id;
@@ -75,27 +77,6 @@ public class Sala {
         this.mensagens = mensagens;
     }
 
-//    public Sala(String id, String criador, String nome, String descricao, JSONObject votos) {
-//        this.criador = criador;
-//        this.nome = nome;
-//        this.descricao = descricao;
-//        this.votos = votos;
-//        this.id = id;
-//        this.inicio = new Timestamp(System.currentTimeMillis());
-//        this.fim = new Timestamp(System.currentTimeMillis());
-//        this.mensagens = 0;
-//        
-//
-//     
-//    }
-    public String getCriador() {
-        return criador;
-    }
-
-    public void setCriador(String criador) {
-        this.criador = criador;
-    }
-
     public String getNome() {
         return nome;
     }
@@ -112,8 +93,25 @@ public class Sala {
         this.descricao = descricao;
     }
 
+    public String getCriador_ra() {
+        return criador_ra;
+    }
+
+    public void setCriador_ra(String criador_ra) {
+        this.criador_ra = criador_ra;
+    }
+
+    public String getCriador_nome() {
+        return criador_nome;
+    }
+
+    public void setCriador_nome(String criador_nome) {
+        this.criador_nome = criador_nome;
+    }
+
     public int getId() {
         return id;
     }
 
+    
 }

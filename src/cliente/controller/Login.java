@@ -5,17 +5,11 @@
  */
 package cliente.controller;
 
-import cliente.visao.Home;
 import cliente.vo.Cliente;
-import java.io.IOException;
-import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
 import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import jdk.nashorn.internal.parser.JSONParser;
 import org.json.JSONObject;
 
 /**
@@ -39,7 +33,7 @@ public class Login {
     public Login() {
     }
 
-    public JSONObject Logar(Cliente cliente, byte[] hashedPwd) {
+    public JSONObject Logar(Cliente cliente, String hashedPwd) {
         this.cliente = cliente;
 
         JSONObject obj = new JSONObject();

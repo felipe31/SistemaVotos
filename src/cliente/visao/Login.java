@@ -11,6 +11,7 @@ import java.awt.Toolkit;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 import org.json.JSONObject;
 
 
@@ -72,7 +73,7 @@ public class Login extends javax.swing.JFrame {
 
         jLabelPorta.setText("Porta");
 
-        jPasswordFieldSenha.setText("12345");
+        jPasswordFieldSenha.setText("123");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -139,8 +140,7 @@ public class Login extends javax.swing.JFrame {
             System.out.println(cliente.getPorta());
             try{
                 // Hash na senha
-                MessageDigest digest = MessageDigest.getInstance("SHA-256");
-                byte[] hash = digest.digest(String.valueOf(jPasswordFieldSenha.getPassword()).getBytes(StandardCharsets.UTF_8));
+                String hash = sha256(String.valueOf(jPasswordFieldSenha.getPassword()));
                 
                 // Solicita Login e retorna o datagrama 2
                 JSONObject jsonObj = loginCtrl.Logar(cliente, hash);
@@ -158,7 +158,7 @@ public class Login extends javax.swing.JFrame {
                     JOptionPane.showMessageDialog(this, "Erro ao realizar o login!\nTente novamente.",
                             "Erro!", JOptionPane.ERROR_MESSAGE);
                     
-            }catch(NoSuchAlgorithmException e ){
+            }catch(RuntimeException e ){
                 JOptionPane.showMessageDialog(this, "Erro ao criptografar a senha!\nTente novamente.","Erro!", JOptionPane.ERROR_MESSAGE);
             }
         }
@@ -173,6 +173,26 @@ public class Login extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jButtonLogarActionPerformed
 
+     public static String sha256(String base) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(base.getBytes("UTF-8"));
+            StringBuffer hexString = new StringBuffer();
+
+            for (int i = 0; i < hash.length; i++) {
+                String hex = Integer.toHexString(0xff & hash[i]);
+                if (hex.length() == 1) {
+                    hexString.append('0');
+                }
+                hexString.append(hex);
+            }
+
+            return hexString.toString();
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+    
     /**
      * @param args the command line arguments
      */

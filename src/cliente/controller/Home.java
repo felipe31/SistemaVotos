@@ -72,7 +72,6 @@ public class Home {
     
     public void criaSala(JSONObject jsonSala) {
         jsonSala.put("tipo", 3);
-        jsonSala.put("criador", cliente.getRa());
         jsonOp.enviarJSON(jsonSala, clienteSocket, cliente.getIp(), cliente.getPorta());
     }
     

@@ -6,7 +6,6 @@
 package cliente.vo;
 
 import org.json.JSONObject;
-import java.sql.Timestamp;
 /**
  * this.inicio = new Timestamp(System.currentTimeMillis());
  * @author felipesoares

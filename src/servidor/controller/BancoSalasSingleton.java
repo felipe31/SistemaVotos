@@ -37,17 +37,18 @@ public final class BancoSalasSingleton {
         JSONObject json = new JSONObject();
         json.put("crypt", 15);
         json.put("graphs", 16);
-        addSala(new Sala(i, "1600001", "Crypt X Graphs" + i++, "Discussão para decidir disciplina para o próximo semestre letivo",
-                String.valueOf(System.currentTimeMillis()/1000), opcoes));
+        criarSala("1600001", "Crypt X Graphs" + i+1, "Discussão para decidir disciplina para o próximo semestre letivo",
+                String.valueOf(System.currentTimeMillis()/1000), opcoes);
 
-        addSala(new Sala(i, "1600001", "Crypt X Graphs" + i++, "Discussão para decidir disciplina para o próximo semestre letivo",
-                String.valueOf(System.currentTimeMillis()/1000), opcoes));
+        criarSala("1600001", "Crypt X Graphs" + i+1, "Discussão para decidir disciplina para o próximo semestre letivo",
+                String.valueOf(System.currentTimeMillis()/1000), opcoes);
 
-        addSala(new Sala(i, "1600001", "Crypt X Graphs" + i++, "Discussão para decidir disciplina para o próximo semestre letivo",
-                String.valueOf(System.currentTimeMillis()/1000), opcoes));
+        criarSala("1600001", "Crypt X Graphs" + i+1, "Discussão para decidir disciplina para o próximo semestre letivo",
+                String.valueOf(System.currentTimeMillis()/1000), opcoes);
 
-        addSala(new Sala(i, "1600001", "Crypt X Graphs" + i++, "Discussão para decidir disciplina para o próximo semestre letivo",
-                String.valueOf(System.currentTimeMillis()/1000), opcoes));
+        criarSala("1600001", "Crypt X Graphs" + i+1, "Discussão para decidir disciplina para o próximo semestre letivo",
+                String.valueOf(System.currentTimeMillis()/1000), opcoes);
+
     }
 
     public static BancoSalasSingleton getInstance() {
@@ -77,10 +78,12 @@ public final class BancoSalasSingleton {
         return bancoSala.size();
     }
 
-    public Sala criarSala(String ra, String nome, String descricao, String fim, ArrayList<Voto> opcoesx) {
-        Sala sala = new Sala(i++, ra, nome,
+    public Sala criarSala(String criador_ra, String nome, String descricao, String fim, ArrayList<Voto> opcoesx) {
+        String criador_nome = BancoClienteSingleton.getInstance().getCliente(criador_ra).getNome();
+        Sala sala = new Sala(i++, criador_ra, criador_nome, nome,
                 descricao, fim, opcoesx);
         addSala(sala);
         return sala;
     }
+
 }

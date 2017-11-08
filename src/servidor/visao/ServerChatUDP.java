@@ -28,7 +28,7 @@ import servidor.vo.Voto;
  * @author felipesoares
  */
 public class ServerChatUDP extends javax.swing.JPanel {
-
+    
     private JFrame frame;
     private DefaultTableModel table;
     private ArrayList<String[]> clientesConectados = new ArrayList<>();
@@ -36,8 +36,9 @@ public class ServerChatUDP extends javax.swing.JPanel {
     private byte[] buffer = null;
     private Thread execServidor;
     private DatagramSocket serverDatagram = null;
-    BancoClienteSingleton bancoCliente = BancoClienteSingleton.getInstance();
-    BancoSalasSingleton bancoSala = BancoSalasSingleton.getInstance();
+    private BancoClienteSingleton bancoCliente = BancoClienteSingleton.getInstance();
+    private BancoSalasSingleton bancoSala = BancoSalasSingleton.getInstance();
+    private boolean isConectado = false;
 
     private ServerChatUDP() {
         initComponents();
@@ -46,9 +47,19 @@ public class ServerChatUDP extends javax.swing.JPanel {
 
         this.CriaJanela();
 
+        
+    }
+    
+    private void pararServidor(){
+        execServidor.interrupt();
+        serverDatagram.close();
+        execServidor = null;
+    }
+    
+    private void iniciarServidor(){
         try {
 
-            serverDatagram = new DatagramSocket(20000);
+            serverDatagram = new DatagramSocket(Integer.parseInt(jTextFieldPorta.getText()));
 
             execServidor = new Thread(() -> {
                 serverTextArea.setText("[SERVIDOR]: Servidor iniciado na porta " + serverDatagram.getLocalPort() + "\n");
@@ -104,8 +115,8 @@ public class ServerChatUDP extends javax.swing.JPanel {
                                     Voto voto = new Voto(jsono.getString("nome"));
                                     opcoes.add(voto);
                                 }
-                                                                
-                                enviaSalaBroadcast(bancoSalasSingleton.criarSala(jSONObject.getString("criador"),jSONObject.getString("nome"), jSONObject.getString("descricao"), jSONObject.getString("fim"), opcoes));   
+                                String criador_ra = getConectado(ip, String.valueOf(receivePkt.getPort()))[0];
+                                enviaSalaBroadcast(bancoSalasSingleton.criarSala(criador_ra,jSONObject.getString("nome"), jSONObject.getString("descricao"), jSONObject.getString("fim"), opcoes));   
                                 
                                 break;
 
@@ -135,8 +146,9 @@ public class ServerChatUDP extends javax.swing.JPanel {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        
     }
-
+    
     // PROCESSAMENTO DOS DATAGRAMAS RECEBIDOS
     //OOOOOLD AINDA NAO ALTERADO DO CHAT
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -239,10 +251,8 @@ public class ServerChatUDP extends javax.swing.JPanel {
             if (isBroadcast(ip, String.valueOf(porta))) {
                 System.out.println("isBroadcast TRUE");
                 for (String[] str : clientesConectados) {
-                    System.out.println(mensagemStr + "-" + str[1] + "-" + str[2]);
-                    enviar = new DatagramPacket(mensagemStr.getBytes(), mensagemStr.getBytes().length,
-                            InetAddress.getByName(str[1]), Integer.parseInt(str[2]));
-                    serverDatagram.send(enviar);
+                    enviarMensagem(mensagemStr, str[1], Integer.parseInt(str[2]));
+                    
                 }
             } else {
                 enviar = new DatagramPacket(mensagemStr.getBytes(), mensagemStr.getBytes().length,
@@ -313,6 +323,9 @@ public class ServerChatUDP extends javax.swing.JPanel {
         serverTextArea = new javax.swing.JTextArea();
         jScrollPane2 = new javax.swing.JScrollPane();
         clientesJTable = new javax.swing.JTable();
+        jLabel1 = new javax.swing.JLabel();
+        jTextFieldPorta = new javax.swing.JTextField();
+        jButtonConectar = new javax.swing.JButton();
 
         serverTextArea.setColumns(20);
         serverTextArea.setRows(5);
@@ -331,19 +344,43 @@ public class ServerChatUDP extends javax.swing.JPanel {
         ));
         jScrollPane2.setViewportView(clientesJTable);
 
+        jLabel1.setText("Porta:");
+
+        jTextFieldPorta.setText("20000");
+
+        jButtonConectar.setText("Conectar");
+        jButtonConectar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonConectarActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanelLayout = new javax.swing.GroupLayout(jPanel);
         jPanel.setLayout(jPanelLayout);
         jPanelLayout.setHorizontalGroup(
             jPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE)
             .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+            .addGroup(jPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jTextFieldPorta, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jButtonConectar)
+                .addContainerGap())
         );
         jPanelLayout.setVerticalGroup(
             jPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelLayout.createSequentialGroup()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 203, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 56, Short.MAX_VALUE))
+                .addGroup(jPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(jTextFieldPorta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButtonConectar))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 48, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -358,12 +395,29 @@ public class ServerChatUDP extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    private void jButtonConectarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonConectarActionPerformed
+        if(isConectado){
+            pararServidor();
+            isConectado = false;
+            jButtonConectar.setText("Conectar");
+            jTextFieldPorta.setEnabled(true);
+        } else{
+            jTextFieldPorta.setEnabled(false);
+            isConectado = true;
+            jButtonConectar.setText("Desconectar");
+            iniciarServidor();
+        }
+    }//GEN-LAST:event_jButtonConectarActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTable clientesJTable;
+    private javax.swing.JButton jButtonConectar;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JTextField jTextFieldPorta;
     private javax.swing.JTextArea serverTextArea;
     // End of variables declaration//GEN-END:variables
 
@@ -379,7 +433,7 @@ public class ServerChatUDP extends javax.swing.JPanel {
         json.put("id", sala.getId());
         json.put("nome", sala.getNome());
         json.put("descricao", sala.getDescricao());
-        json.put("criador", sala.getCriador());
+        json.put("criador", sala.getCriador_nome());
         json.put("inicio", sala.getInicio());
         json.put("fim", sala.getFim());
         json.put("status", sala.getStatus());
@@ -387,6 +441,29 @@ public class ServerChatUDP extends javax.swing.JPanel {
 
         String mensagemStr = json.toString();
         enviarMensagem(mensagemStr, ip, porta);
+    }
+
+    private String[] getConectado(String ip, String porta) {
+        Iterator it = clientesConectados.iterator();
+        String[] clienteConectado;
+        while(it.hasNext()) {
+            clienteConectado = (String[]) it.next();
+            if(clienteConectado[1].equals(ip) && clienteConectado[2].equals(porta))
+                return clienteConectado;
+        }
+        
+        return null;
+    }
+    private String[] getConectado(String ra) {
+        Iterator it = clientesConectados.iterator();
+        String[] clienteConectado;
+        while(it.hasNext()) {
+            clienteConectado = (String[]) it.next();
+            if(clienteConectado[0].equals(ra))
+                return clienteConectado;
+        }
+        
+        return null;
     }
 
 }
