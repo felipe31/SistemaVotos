@@ -86,7 +86,7 @@
     </Component>
     <Component class="javax.swing.JTextField" name="jTextFieldLogin">
       <Properties>
-        <Property name="text" type="java.lang.String" value="1600001"/>
+        <Property name="text" type="java.lang.String" value="123"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabelLogin">
@@ -106,7 +106,7 @@
     </Component>
     <Component class="javax.swing.JTextField" name="jTextFieldIp">
       <Properties>
-        <Property name="text" type="java.lang.String" value="127.0.0.1"/>
+        <Property name="text" type="java.lang.String" value="10.20.8.85"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="jTextFieldPorta">

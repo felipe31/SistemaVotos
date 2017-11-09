@@ -54,6 +54,8 @@ public class ServerChatUDP extends javax.swing.JPanel {
         execServidor.interrupt();
         serverDatagram.close();
         execServidor = null;
+        clientesConectados.clear();
+        table.setNumRows(0);
     }
     
     private void iniciarServidor(){

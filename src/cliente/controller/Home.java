@@ -53,7 +53,7 @@ public class Home {
                 null,
                 json.getString("inicio"),
                 json.getString("fim"), json.getBoolean("status"),
-                json.getInt("mensagens"));
+                0);
         bancoSalas.addSala(sala);
         if(sala != null)
             addSalaVisao(sala);
@@ -91,6 +91,9 @@ public class Home {
                     
                     switch(jsonObj.getInt("tipo")){
                         case 11:
+                            recepcaoSala(jsonObj);
+                            break;
+                        case 4:
                             recepcaoSala(jsonObj);
                             break;
                         default:

@@ -42,28 +42,6 @@
 	"status":true/false,
 	"mensagens":666
 }
-================================ OLD
-3 = criar sala, do cliente
-{
-	"tipo":3,
-	"nome":"nome da sala",
-	"descricao":"descrição da sala e tal"
-	"fim": "unix timestamp"
-}
-
-================================ NEW
-3 = criar sala
-{
-	"tipo":3,
-	"criador":id,
-	"nome":"nome_da_sala_e_tal",
-	"descricao": "descrição do que será votado e tal",
-	"fim": "unix timestamp"
-	"opcoes":[
-		{"nome":"usdhfasdhfaeshf"},
-		...
-	]
-}
 
 
 4 = depois da nova sala, atualizar os clientes de sua existência, do servidor

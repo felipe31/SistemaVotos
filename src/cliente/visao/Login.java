@@ -59,7 +59,7 @@ public class Login extends javax.swing.JFrame {
             }
         });
 
-        jTextFieldLogin.setText("1600001");
+        jTextFieldLogin.setText("123");
 
         jLabelLogin.setText("Login");
 
@@ -67,7 +67,7 @@ public class Login extends javax.swing.JFrame {
 
         jLabelHost.setText("Host");
 
-        jTextFieldIp.setText("127.0.0.1");
+        jTextFieldIp.setText("10.20.8.85");
 
         jTextFieldPorta.setText("20000");
 
@@ -138,7 +138,6 @@ public class Login extends javax.swing.JFrame {
         {
             Cliente cliente = new Cliente(null, jTextFieldLogin.getText(), jTextFieldIp.getText(), jTextFieldPorta.getText());
             System.out.println(cliente.getPorta());
-            try{
                 // Hash na senha
                 String hash = sha256(String.valueOf(jPasswordFieldSenha.getPassword()));
                 
@@ -158,9 +157,8 @@ public class Login extends javax.swing.JFrame {
                     JOptionPane.showMessageDialog(this, "Erro ao realizar o login!\nTente novamente.",
                             "Erro!", JOptionPane.ERROR_MESSAGE);
                     
-            }catch(RuntimeException e ){
-                JOptionPane.showMessageDialog(this, "Erro ao criptografar a senha!\nTente novamente.","Erro!", JOptionPane.ERROR_MESSAGE);
-            }
+            
+//                JOptionPane.showMessageDialog(this, "Erro ao criptografar a senha!\nTente novamente.","Erro!", JOptionPane.ERROR_MESSAGE);
         }
         if(jTextFieldLogin.getText().equals("adm") && String.valueOf(jPasswordFieldSenha.getPassword()).equals("adm"))
         {
@@ -189,7 +187,9 @@ public class Login extends javax.swing.JFrame {
 
             return hexString.toString();
         } catch (Exception ex) {
-            throw new RuntimeException(ex);
+            System.out.println("Não foi possível criptografar a senha;");
+//            JOptionPane.showMessageDialog(this, "Erro ao criptografar a senha!\nTente novamente.","Erro!", JOptionPane.ERROR_MESSAGE);
+            return base;
         }
     }
     
