@@ -40,7 +40,6 @@ public class Home {
         this.clienteSocket = clienteSocket;
         this.qtdSalas = qtdSalas;
         this.salasTabela = salasTabela;
-        
         abrirRecepcaoJSON(clienteSocket, cliente.getIp(), cliente.getPorta());
     }
     
