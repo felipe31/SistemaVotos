@@ -8,10 +8,7 @@ package cliente.visao;
 import javax.swing.JOptionPane;
 import cliente.vo.Cliente;
 import java.awt.Toolkit;
-import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
 import org.json.JSONObject;
 
 
@@ -60,6 +57,11 @@ public class Login extends javax.swing.JFrame {
         });
 
         jTextFieldLogin.setText("123");
+        jTextFieldLogin.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextFieldLoginActionPerformed(evt);
+            }
+        });
 
         jLabelLogin.setText("Login");
 
@@ -67,13 +69,28 @@ public class Login extends javax.swing.JFrame {
 
         jLabelHost.setText("Host");
 
-        jTextFieldIp.setText("10.20.8.85");
+        jTextFieldIp.setText("127.0.0.1");
+        jTextFieldIp.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextFieldIpActionPerformed(evt);
+            }
+        });
 
         jTextFieldPorta.setText("20000");
+        jTextFieldPorta.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextFieldPortaActionPerformed(evt);
+            }
+        });
 
         jLabelPorta.setText("Porta");
 
         jPasswordFieldSenha.setText("123");
+        jPasswordFieldSenha.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jPasswordFieldSenhaActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -170,6 +187,22 @@ public class Login extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Adm Login","Adm Login", JOptionPane.INFORMATION_MESSAGE);
         }
     }//GEN-LAST:event_jButtonLogarActionPerformed
+
+    private void jTextFieldIpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldIpActionPerformed
+        jButtonLogarActionPerformed(evt);
+    }//GEN-LAST:event_jTextFieldIpActionPerformed
+
+    private void jPasswordFieldSenhaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jPasswordFieldSenhaActionPerformed
+        jButtonLogarActionPerformed(evt);
+    }//GEN-LAST:event_jPasswordFieldSenhaActionPerformed
+
+    private void jTextFieldLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldLoginActionPerformed
+        jButtonLogarActionPerformed(evt);
+    }//GEN-LAST:event_jTextFieldLoginActionPerformed
+
+    private void jTextFieldPortaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldPortaActionPerformed
+        jButtonLogarActionPerformed(evt);
+    }//GEN-LAST:event_jTextFieldPortaActionPerformed
 
      public static String sha256(String base) {
         try {

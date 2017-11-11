@@ -5,7 +5,6 @@
  */
 package cliente.vo;
 
-import servidor.controller.*;
 import cliente.vo.Sala;
 import java.util.ArrayList;
 import org.json.JSONObject;
@@ -30,10 +29,12 @@ public final class BancoSalasSingleton {
     public ArrayList<Sala> getBancoSala(){
         return bancoSala;
     }
-    public Sala getCliente(int ra){
-        for(Sala c : bancoSala){
-            if(c.getId()==ra)
-                return c;
+
+    public Sala getSala(int id) {
+        for (Sala s : bancoSala) {
+            if (s.getId()==id) {
+                return s;
+            }
         }
         return null;
     }

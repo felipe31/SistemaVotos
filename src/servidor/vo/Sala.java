@@ -17,12 +17,13 @@ public class Sala {
     private String criador_nome;
     private String nome;
     private String descricao;
+    private ArrayList<Voto> opcoes;
     private final int id;
     private String inicio;
     private String fim;
-    private Boolean status = true;
-    private int mensagens;
-    private ArrayList<Voto> opcoes = new ArrayList<>();
+    private boolean status = true;
+    private int qtdMensagens;
+    
 
     public Sala(int id, String criador_ra, String criador_nome, String nome, String descricao, String fim, ArrayList<Voto> opcoes) {
         this.criador_ra = criador_ra;
@@ -32,7 +33,7 @@ public class Sala {
         this.id = id;
         this.inicio = String.valueOf(System.currentTimeMillis()/1000);
         this.fim = String.valueOf(fim);
-        this.mensagens = 0;
+        this.qtdMensagens = 0;
         this.opcoes = opcoes;
 
     }
@@ -69,12 +70,20 @@ public class Sala {
         this.status = status;
     }
 
-    public int getMensagens() {
-        return mensagens;
+    public boolean isStatus() {
+        return status;
     }
 
-    public void setMensagens(int mensagens) {
-        this.mensagens = mensagens;
+    public void setStatus(boolean status) {
+        this.status = status;
+    }
+
+    public int getQtdMensagens() {
+        return qtdMensagens;
+    }
+
+    public void setQtdMensagens(int qtdMensagens) {
+        this.qtdMensagens = qtdMensagens;
     }
 
     public String getNome() {

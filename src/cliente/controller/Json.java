@@ -34,6 +34,7 @@ public class Json {
                 receiveStr = receiveStr.trim();
                 JSONObject jsonObj = new JSONObject(receiveStr);
                 System.out.println("\n[CLIENTE]: Mensagem recebida: "+jsonObj.toString());
+                System.out.println("\n[CLIENTE]: Mensagem recebida de "+ip+":"+porta);
                 jsonThread = jsonObj;
             }catch(UnknownHostException ex) {
                 Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
@@ -62,9 +63,10 @@ public class Json {
             byte[] messageByte = mensagemStr.getBytes();
 
             DatagramPacket packet = new DatagramPacket(messageByte, messageByte.length, InetAddress.getByName(ip), Integer.parseInt(porta));
-            System.out.println("[CLIENTE]: Mensagem a ser enviada: "+mensagemStr);
             socket.send(packet);
-            System.out.println("\n[CLIENTE]: Mensagem enviada com sucesso!\n");
+            System.out.println("[CLIENTE]: Mensagem enviada: "+mensagemStr);
+            System.out.println("[CLIENTE]: Mensagem enviada para "+ip+":"+porta);
+            
             return true;
         } catch (Exception e) {
             return false;

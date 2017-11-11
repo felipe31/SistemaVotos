@@ -5,7 +5,9 @@
  */
 package cliente.vo;
 
+import java.util.ArrayList;
 import org.json.JSONObject;
+import servidor.vo.Voto;
 /**
  * this.inicio = new Timestamp(System.currentTimeMillis());
  * @author felipesoares
@@ -14,18 +16,18 @@ public class Sala {
     private String criador;
     private String nome;
     private String descricao;
-    private JSONObject votos;
+    private ArrayList<Voto> opcoes;
     private final int id;
     private final String inicio;
     private String fim;
     private boolean status;
     private int qtdMensagens;
     
-    public Sala(int id, String criador, String nome, String descricao, JSONObject votos, String inicio, String fim, boolean status, int qtdMensagens) {
+    public Sala(int id, String criador, String nome, String descricao, String inicio, String fim, ArrayList<Voto> opcoes, boolean status, int qtdMensagens) {
         this.criador = criador;
         this.nome = nome;
         this.descricao = descricao;
-        this.votos = votos;
+        this.opcoes = opcoes;
         this.id = id;
         this.inicio = inicio;
         this.fim = fim;
@@ -57,12 +59,12 @@ public class Sala {
         this.descricao = descricao;
     }
 
-    public JSONObject getVotos() {
-        return votos;
+    public ArrayList<Voto> getOpcoes() {
+        return opcoes;
     }
 
-    public void setVotos(JSONObject votos) {
-        this.votos = votos;
+    public void setOpcoes(ArrayList<Voto> opcoes) {
+        this.opcoes = opcoes;
     }
 
     public int getId() {

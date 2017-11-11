@@ -14,10 +14,9 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JOptionPane;
-import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import org.json.JSONObject;
 
@@ -30,7 +29,6 @@ public class Home {
     private Cliente cliente;
     private Json jsonOp = new Json();
     private Thread recebimentoThread = null;
-    private JSONObject jsonThread = null;
     private DatagramSocket clienteSocket = null;
     private int qtdSalas;
     private DefaultTableModel salasTabela;
@@ -43,31 +41,56 @@ public class Home {
         abrirRecepcaoJSON(clienteSocket, cliente.getIp(), cliente.getPorta());
     }
     
-    private void recepcaoSala(JSONObject json){
+    private void recepcaoSala(JSONObject json, boolean novaSala){
         BancoSalasSingleton bancoSalas = BancoSalasSingleton.getInstance();
+        int mensagens = novaSala ? 0 : json.getInt("mensagens");
         Sala sala = new Sala(json.getInt("id"),
                 json.getString("criador"),
                 json.getString("nome"),
                 json.getString("descricao"),
-                null,
                 json.getString("inicio"),
-                json.getString("fim"), json.getBoolean("status"),
-                0);
+                json.getString("fim"),
+                null,
+                json.getBoolean("status"),
+                mensagens);
         bancoSalas.addSala(sala);
-        if(sala != null)
-            addSalaVisao(sala);
-        else
-            System.out.println("Deu pau ao receber sala");
+        addSalaVisao(sala);
     }
         
     private void addSalaVisao(Sala sala){
         String [] dados;
-        dados = new String[]{sala.getNome(), sala.getDescricao(), sala.isStatus()?"Ativo":"Inativo"};
+        Calendar c = Calendar.getInstance();
+        c.setTime(new java.util.Date((long)Long.parseLong(sala.getFim())*1000));
+        dados = new String[]{String.valueOf(sala.getId()), sala.getNome(),
+            sala.getDescricao(), sala.isStatus()?"Ativo":"Inativo", 
+            sala.getCriador(), 
+            String.valueOf(c.get(Calendar.DAY_OF_MONTH)+"/"+c.get(Calendar.MONTH)+"/"+c.get(Calendar.YEAR)
+                +" "+c.get(Calendar.HOUR_OF_DAY)+":"+c.get(Calendar.MINUTE))};
         if(salasTabela != null)
             salasTabela.addRow(dados);
         else
             System.out.println("Deu pau ao imprimir sala na tabela");
     }
+    
+    public void solicitarAcessoSala(String id){
+        
+//5 = cliente pedindo acesso a sala
+//{
+//	"tipo":5,
+//	"id":id_da_sala_que_o_cliente_quer_entrar
+//}
+        BancoSalasSingleton bancoSalas = BancoSalasSingleton.getInstance();
+        
+        Sala sala = bancoSalas.getSala(Integer.parseInt(id));
+        if(sala != null) {
+            JSONObject json  = new JSONObject();
+            json.put("tipo", 5);
+            json.put("id", sala.getId());
+            jsonOp.enviarJSON(json, clienteSocket, cliente.getIp(), cliente.getPorta());
+        }
+        
+    }
+    
     
     public void criaSala(JSONObject jsonSala) {
         jsonSala.put("tipo", 3);
@@ -86,14 +109,13 @@ public class Home {
                     receiveStr = receiveStr.trim();
                     JSONObject jsonObj = new JSONObject(receiveStr);
                     System.out.println("\n[CLIENTE]: Mensagem recebida: "+jsonObj.toString());
-                    jsonThread = jsonObj;
                     
                     switch(jsonObj.getInt("tipo")){
                         case 11:
-                            recepcaoSala(jsonObj);
+                            recepcaoSala(jsonObj, false);
                             break;
                         case 4:
-                            recepcaoSala(jsonObj);
+                            recepcaoSala(jsonObj, true);
                             break;
                         default:
                             // enviar mensagem avisando o erro pra quem mandou
