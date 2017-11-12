@@ -18,12 +18,13 @@ public class Sala {
     private String nome;
     private String descricao;
     private ArrayList<Voto> opcoes;
+    private int qtdVotos;
     private final int id;
     private String inicio;
     private String fim;
     private boolean status = true;
     private int qtdMensagens;
-    
+    private ArrayList<Cliente> clientesConectados;
 
     public Sala(int id, String criador_ra, String criador_nome, String nome, String descricao, String fim, ArrayList<Voto> opcoes) {
         this.criador_ra = criador_ra;
@@ -31,11 +32,12 @@ public class Sala {
         this.nome = nome;
         this.descricao = descricao;
         this.id = id;
-        this.inicio = String.valueOf(System.currentTimeMillis()/1000);
+        this.inicio = String.valueOf(System.currentTimeMillis() / 1000);
         this.fim = String.valueOf(fim);
         this.qtdMensagens = 0;
         this.opcoes = opcoes;
-
+        clientesConectados = new ArrayList<>();
+        qtdVotos = 0;
     }
 
     public ArrayList<Voto> getOpcoes() {
@@ -122,5 +124,50 @@ public class Sala {
         return id;
     }
 
+    public ArrayList<Cliente> getClientesConectados() {
+        return clientesConectados;
+    }
+
+    public Cliente getClienteConectado(String ra) {
+
+        for (Cliente c : clientesConectados) {
+            if (c.getRa().equals(ra)) {
+                return c;
+            }
+        }
+        return null;
+    }
     
+    public Cliente getClienteConectado(String ip, String porta){
+        for (Cliente c : clientesConectados) {
+            if (c.getIp().equals(ip) && c.getPorta().equals(porta)) {
+                return c;
+            }
+        }
+        return null;
+    }
+
+    public void addClienteConectado(Cliente cliente) {
+        clientesConectados.add(cliente);
+    }
+
+    public void removeClienteConectado(Cliente cliente) {
+        clientesConectados.remove(cliente);
+    }
+    
+    public boolean addVoto(String descricaoVoto, Cliente cliente){
+        for(Voto v : opcoes){
+            if(v.getDescricao().equals(descricaoVoto)){
+                v.setContador(v.getContador()+1);
+                qtdVotos++;
+                        
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public int getQtdVotos(){
+        return qtdVotos;
+    }
 }

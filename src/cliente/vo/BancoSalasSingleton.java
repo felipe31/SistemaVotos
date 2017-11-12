@@ -7,7 +7,6 @@ package cliente.vo;
 
 import cliente.vo.Sala;
 import java.util.ArrayList;
-import org.json.JSONObject;
 
 /**
  *
