@@ -86,6 +86,8 @@ public class ServerChatUDP extends javax.swing.JPanel {
                         String ip = receivePkt.getAddress().toString().split("/")[1];
 
                         switch ((int) jSONObject.get("tipo")) {
+                            case -1:
+                            break;
                             case 0:
                                 System.out.println("\n[SERVIDOR]: Solicitação de login");
                                 if (verificaLogin(jSONObject.getString("ra"), jSONObject.get("senha").toString()) != null) {
@@ -160,12 +162,7 @@ public class ServerChatUDP extends javax.swing.JPanel {
     // PROCESSAMENTO DOS DATAGRAMAS RECEBIDOS
     //OOOOOLD AINDA NAO ALTERADO DO CHAT
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    private void encaminharMensagem(String[] mensagem, String ip, int porta) {
-
-        enviarMensagem("4#" + ip + "#" + porta + "#" + mensagem[3], mensagem[1], Integer.parseInt(mensagem[2]));
-
-    }
-
+    
     private boolean isBroadcast(String ip, String porta) {
         if (ip.equals("999.999.999.999") && porta.equals("99999")) {
             return true;
@@ -203,8 +200,31 @@ public class ServerChatUDP extends javax.swing.JPanel {
         
         enviarClientesConectadosSala(sala, ip, porta);
         enviarHistoricoSala(sala, ip, porta);
+        encaminharMensagem("oi", ip, Integer.parseInt(porta));
+        encaminharMensagem("tudo bem?", ip, Integer.parseInt(porta));
+        encaminharMensagem("oi", ip, Integer.parseInt(porta));
+        encaminharMensagem("oi", ip, Integer.parseInt(porta));
         
     }
+    private void encaminharMensagem(String mensagem, String ip, int porta) {
+//        9 = mensagem do servidor
+//{
+//	"tipo":9,
+//	"id":numero_da_mensagem,
+//	"timestamp":"unix_time",
+//	"criador":"nome do cara que escreveu a mensagem",
+//	"mensagem":"string de até 1000 caracteres"
+//}
+        JSONObject json = new JSONObject();
+        
+        json.put("tipo", 9);
+        json.put("criador", "Felipe Soares");
+        json.put("mensagem", mensagem);
+        
+        enviarMensagem(json.toString(), ip, porta);
+
+    }
+
     
     private void addVoto(int sala, String ip, String porta){
         /*

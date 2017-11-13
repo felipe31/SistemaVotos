@@ -9,12 +9,13 @@ import cliente.vo.Cliente;
 import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.JFrame;
-import javax.swing.JScrollPane;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -22,6 +23,7 @@ import javax.swing.table.DefaultTableModel;
  * @author Samsung
  */
 public class Home extends JFrame {
+
     private Cliente cliente = null;
     private cliente.controller.Login loginCtrl = null;
     private int qtdSalas;
@@ -33,48 +35,62 @@ public class Home extends JFrame {
      */
     public Home() {
         initComponents();
-        setLocation(Toolkit.getDefaultToolkit().getScreenSize().width/2-this.getSize().width/2, Toolkit.getDefaultToolkit().getScreenSize().height/2-this.getSize().height/2);
+        setLocation(Toolkit.getDefaultToolkit().getScreenSize().width / 2 - this.getSize().width / 2, Toolkit.getDefaultToolkit().getScreenSize().height / 2 - this.getSize().height / 2);
         salasTabela = iniciaJTable(jTableSalas);
     }
-    
+
     public Home(Cliente cliente, cliente.controller.Login loginCtrl, int qtdSalas) {
         initComponents();
-        setLocation(Toolkit.getDefaultToolkit().getScreenSize().width/2-this.getSize().width/2, Toolkit.getDefaultToolkit().getScreenSize().height/2-this.getSize().height/2);
+        setLocation(Toolkit.getDefaultToolkit().getScreenSize().width / 2 - this.getSize().width / 2, Toolkit.getDefaultToolkit().getScreenSize().height / 2 - this.getSize().height / 2);
         this.cliente = cliente;
-        jLabelBemVindo.setText("Seja bem-vindo, "+cliente.getNome());
+        jLabelBemVindo.setText("Seja bem-vindo, " + cliente.getNome());
         this.loginCtrl = loginCtrl;
         this.qtdSalas = qtdSalas;
-        
+
         salasTabela = iniciaJTable(jTableSalas);
-        homeCtrl = new cliente.controller.Home(cliente, loginCtrl.getClientSocket(), salasTabela, qtdSalas);
+        homeCtrl = new cliente.controller.Home(this, cliente, loginCtrl.getClientSocket(), salasTabela, qtdSalas);
 
         MouseListener mouseL = iniciaMouseListener(this);
-        
-        jTableSalas.addMouseListener(mouseL);
 
-                
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        jTableSalas.addMouseListener(mouseL);
+        this.addWindowListener(new WindowAdapter() {
+
+            public void windowClosing(WindowEvent e) {
+                jButtonSairActionPerformed(null);
+            }
+        });
     }
-    
+
     private DefaultTableModel iniciaJTable(JTable table) {
 
         DefaultListSelectionModel selectionModel = new DefaultListSelectionModel();
         selectionModel.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         table.setSelectionModel(selectionModel);
         DefaultTableModel tableModel = (DefaultTableModel) table.getModel();
-        
+
         tableModel.setColumnIdentifiers(new Object[]{"ID", "Nome", "Descrição", "Status", "Criador", "Validade"});
         tableModel.setNumRows(0);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        table.getColumnModel().getColumn(0).setPreferredWidth(table.getWidth()/table.getColumnCount()-table.getWidth()/table.getColumnCount()/2);
-        table.getColumnModel().getColumn(1).setPreferredWidth(2*table.getWidth()/table.getColumnCount()-table.getWidth()/table.getColumnCount()/2);
-        table.getColumnModel().getColumn(2).setPreferredWidth(table.getWidth()/table.getColumnCount()+table.getWidth()/table.getColumnCount()/2);
-        table.getColumnModel().getColumn(3).setPreferredWidth(table.getWidth()/table.getColumnCount()-table.getWidth()/table.getColumnCount()/2);
-        table.getColumnModel().getColumn(4).setPreferredWidth(table.getWidth()/table.getColumnCount());
-        table.getColumnModel().getColumn(5).setPreferredWidth(table.getWidth()/table.getColumnCount());
+        table.getColumnModel().getColumn(0).setPreferredWidth(table.getWidth() / table.getColumnCount() - table.getWidth() / table.getColumnCount() / 2);
+        table.getColumnModel().getColumn(1).setPreferredWidth(table.getWidth() / table.getColumnCount() + table.getWidth() / table.getColumnCount() / 2);
+        table.getColumnModel().getColumn(2).setPreferredWidth(table.getWidth() / table.getColumnCount() + table.getWidth() / table.getColumnCount() / 3);
+        table.getColumnModel().getColumn(3).setPreferredWidth(table.getWidth() / table.getColumnCount() - table.getWidth() / table.getColumnCount() / 2);
+        table.getColumnModel().getColumn(4).setPreferredWidth(table.getWidth() / table.getColumnCount());
+        table.getColumnModel().getColumn(5).setPreferredWidth(table.getWidth() / table.getColumnCount() + table.getWidth() / table.getColumnCount() / 2 - table.getWidth() / table.getColumnCount() / 3);
         table.setAutoscrolls(true);
 
         return tableModel;
     }
+
+    @Override
+    public void setVisible(boolean b) {
+        super.setVisible(b); //To change body of generated methods, choose Tools | Templates.
+        if(b){
+            homeCtrl.setSala(null, null);
+        }
+    }
+
     
     /**
      * This method is called from within the constructor to initialize the form.
@@ -138,7 +154,7 @@ public class Home extends JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 535, Short.MAX_VALUE)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 638, Short.MAX_VALUE)
                         .addContainerGap())
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -167,23 +183,22 @@ public class Home extends JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButtonSairActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSairActionPerformed
-        
-        if(loginCtrl.Deslogar()){
+
+        if (loginCtrl.Deslogar()) {
             new Login().setVisible(true);
             this.dispose();
             JOptionPane.showMessageDialog(this, "Logout realizado com sucesso!",
-                "Sucesso no Logout", JOptionPane.INFORMATION_MESSAGE);
+                    "Sucesso no Logout", JOptionPane.INFORMATION_MESSAGE);
         } else {
             JOptionPane.showMessageDialog(this, "Erro ao realizar o logout!\nTente novamente.",
-                "Erro!", JOptionPane.ERROR_MESSAGE);
+                    "Erro!", JOptionPane.ERROR_MESSAGE);
         }
-        
     }//GEN-LAST:event_jButtonSairActionPerformed
 
     private void jButtonCriarSalaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCriarSalaActionPerformed
         CriaSala novaSala = new CriaSala(homeCtrl);
         novaSala.setVisible(true);
-        
+
     }//GEN-LAST:event_jButtonCriarSalaActionPerformed
 
     /**
@@ -234,21 +249,24 @@ public class Home extends JFrame {
         return new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if(e.getClickCount() > 1) {
-                    homeCtrl.solicitarAcessoSala((String)salasTabela.getValueAt(jTableSalas.getSelectedRow(),0));
+                if (e.getClickCount() > 1) {
+                    homeCtrl.solicitarAcessoSala((String) salasTabela.getValueAt(jTableSalas.getSelectedRow(), 0));
                 }
-                    
+
             }
 
             @Override
             public void mousePressed(MouseEvent e) {
             }
+
             @Override
             public void mouseReleased(MouseEvent e) {
             }
+
             @Override
             public void mouseEntered(MouseEvent e) {
             }
+
             @Override
             public void mouseExited(MouseEvent e) {
             }

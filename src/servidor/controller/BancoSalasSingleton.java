@@ -37,58 +37,19 @@ public final class BancoSalasSingleton {
         JSONObject json = new JSONObject();
         json.put("crypt", 15);
         json.put("graphs", 16);
-        criarSala("1600001", "Crypt X Graphs" + i+1, "Discussão para decidir disciplina para o próximo semestre letivo",
+        criarSala("1600001", "Crypt X Graphs" + i, "Discussão para decidir disciplina para o próximo semestre letivo",
                 String.valueOf(System.currentTimeMillis()/1000), opcoes);
-
-        criarSala("1600001", "Crypt X Graphs" + i+1, "Discussão para decidir disciplina para o próximo semestre letivo",
+        
+        criarSala("1600001", "Crypt X Graphs" + i, "Discussão para decidir disciplina para o próximo semestre letivo",
                 String.valueOf(System.currentTimeMillis()/1000), opcoes);
-
-        criarSala("1600001", "Crypt X Graphs" + i+1, "Discussão para decidir disciplina para o próximo semestre letivo",
+        
+        criarSala("1600001", "Crypt X Graphs" + i, "Discussão para decidir disciplina para o próximo semestre letivo",
                 String.valueOf(System.currentTimeMillis()/1000), opcoes);
-
-        criarSala("1600001", "Crypt X Graphs" + i+1, "Discussão para decidir disciplina para o próximo semestre letivo",
+        criarSala("1600001", "Crypt X Graphs" + i, "Discussão para decidir disciplina para o próximo semestre letivo",
                 String.valueOf(System.currentTimeMillis()/1000), opcoes);
-
-        criarSala("1600001", "Crypt X Graphs" + i+1, "Discussão para decidir disciplina para o próximo semestre letivo",
+        criarSala("1600001", "Crypt X Graphs" + i, "Discussão para decidir disciplina para o próximo semestre letivo",
                 String.valueOf(System.currentTimeMillis()/1000), opcoes);
-
-        criarSala("1600001", "Crypt X Graphs" + i+1, "Discussão para decidir disciplina para o próximo semestre letivo",
-                String.valueOf(System.currentTimeMillis()/1000), opcoes);
-
-        criarSala("1600001", "Crypt X Graphs" + i+1, "Discussão para decidir disciplina para o próximo semestre letivo",
-                String.valueOf(System.currentTimeMillis()/1000), opcoes);
-
-        criarSala("1600001", "Crypt X Graphs" + i+1, "Discussão para decidir disciplina para o próximo semestre letivo",
-                String.valueOf(System.currentTimeMillis()/1000), opcoes);
-
-        criarSala("1600001", "Crypt X Graphs" + i+1, "Discussão para decidir disciplina para o próximo semestre letivo",
-                String.valueOf(System.currentTimeMillis()/1000), opcoes);
-
-        criarSala("1600001", "Crypt X Graphs" + i+1, "Discussão para decidir disciplina para o próximo semestre letivo",
-                String.valueOf(System.currentTimeMillis()/1000), opcoes);
-
-        criarSala("1600001", "Crypt X Graphs" + i+1, "Discussão para decidir disciplina para o próximo semestre letivo",
-                String.valueOf(System.currentTimeMillis()/1000), opcoes);
-
-        criarSala("1600001", "Crypt X Graphs" + i+1, "Discussão para decidir disciplina para o próximo semestre letivo",
-                String.valueOf(System.currentTimeMillis()/1000), opcoes);
-
-        criarSala("1600001", "Crypt X Graphs" + i+1, "Discussão para decidir disciplina para o próximo semestre letivo",
-                String.valueOf(System.currentTimeMillis()/1000), opcoes);
-
-        criarSala("1600001", "Crypt X Graphs" + i+1, "Discussão para decidir disciplina para o próximo semestre letivo",
-                String.valueOf(System.currentTimeMillis()/1000), opcoes);
-
-        criarSala("1600001", "Crypt X Graphs" + i+1, "Discussão para decidir disciplina para o próximo semestre letivo",
-                String.valueOf(System.currentTimeMillis()/1000), opcoes);
-
-        criarSala("1600001", "Crypt X Graphs" + i+1, "Discussão para decidir disciplina para o próximo semestre letivo",
-                String.valueOf(System.currentTimeMillis()/1000), opcoes);
-
-        criarSala("1600001", "Crypt X Graphs" + i+1, "Discussão para decidir disciplina para o próximo semestre letivo",
-                String.valueOf(System.currentTimeMillis()/1000), opcoes);
-
-        criarSala("1600001", "Crypt X Graphs" + i+1, "Discussão para decidir disciplina para o próximo semestre letivo",
+        criarSala("1600001", "Crypt X Graphs" + i, "Discussão para decidir disciplina para o próximo semestre letivo",
                 String.valueOf(System.currentTimeMillis()/1000), opcoes);
 
     }

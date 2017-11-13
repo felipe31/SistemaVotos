@@ -5,17 +5,60 @@
  */
 package cliente.visao;
 
+import cliente.vo.Cliente;
+import java.awt.Color;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.net.DatagramSocket;
+import javax.swing.JOptionPane;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
+
 /**
  *
  * @author felipesoares
  */
 public class Sala extends javax.swing.JFrame {
 
+    private Cliente cliente;
+    private cliente.controller.Sala salaCtrl;
+    private cliente.visao.Home homeVisao;
+
     /**
      * Creates new form Sala
      */
+
     public Sala() {
+    }
+
+    public Sala(cliente.visao.Home homeVisao, Cliente cliente, DatagramSocket clienteSocket) {
         initComponents();
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+
+        this.homeVisao = homeVisao;
+        salaCtrl = new cliente.controller.Sala(cliente, clienteSocket, jTextPaneMensagens, jTableClientesConectados, jTableVotos);
+
+        this.addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                homeVisao.setVisible(true);
+            }
+        });
+
+        jTextFieldMensagem.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                if (jTextFieldMensagem.getText().length() >= 1000 && !(evt.getKeyChar() == KeyEvent.VK_DELETE || evt.getKeyChar() == KeyEvent.VK_BACK_SPACE)) {
+                    getToolkit().beep();
+                    evt.consume();
+                }
+            }
+        });
+    }
+
+    public cliente.controller.Sala getSalaCtrl() {
+        return salaCtrl;
     }
 
     /**
@@ -27,21 +70,109 @@ public class Sala extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTableClientesConectados = new javax.swing.JTable();
+        jButtonEnviar = new javax.swing.JButton();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jTextPaneMensagens = new javax.swing.JTextPane();
+        jTextFieldMensagem = new javax.swing.JTextField();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        jTableVotos = new javax.swing.JTable();
+        jButton1 = new javax.swing.JButton();
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        jTableClientesConectados.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null},
+                {null},
+                {null},
+                {null}
+            },
+            new String [] {
+                "Nome"
+            }
+        ));
+        jScrollPane1.setViewportView(jTableClientesConectados);
+
+        jButtonEnviar.setText("Enviar");
+        jButtonEnviar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonEnviarActionPerformed(evt);
+            }
+        });
+
+        jScrollPane2.setViewportView(jTextPaneMensagens);
+
+        jTextFieldMensagem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextFieldMensagemActionPerformed(evt);
+            }
+        });
+
+        jTableVotos.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null},
+                {null},
+                {null},
+                {null}
+            },
+            new String [] {
+                "Opções para voto"
+            }
+        ));
+        jScrollPane3.setViewportView(jTableVotos);
+
+        jButton1.setText("Votar");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 129, Short.MAX_VALUE)
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jTextFieldMensagem, javax.swing.GroupLayout.DEFAULT_SIZE, 339, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButtonEnviar))
+                    .addComponent(jScrollPane2))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 209, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(jScrollPane2))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButtonEnviar)
+                    .addComponent(jTextFieldMensagem, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton1))
+                .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jButtonEnviarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonEnviarActionPerformed
+        //enviar mensagens bla bla bla
+    }//GEN-LAST:event_jButtonEnviarActionPerformed
+
+    private void jTextFieldMensagemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldMensagemActionPerformed
+        jButtonEnviarActionPerformed(evt);
+    }//GEN-LAST:event_jTextFieldMensagemActionPerformed
 
     /**
      * @param args the command line arguments
@@ -79,5 +210,14 @@ public class Sala extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButtonEnviar;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JTable jTableClientesConectados;
+    private javax.swing.JTable jTableVotos;
+    private javax.swing.JTextField jTextFieldMensagem;
+    private javax.swing.JTextPane jTextPaneMensagens;
     // End of variables declaration//GEN-END:variables
 }
