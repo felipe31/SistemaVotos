@@ -29,6 +29,8 @@ public final class BancoClienteSingleton {
             addCliente(new Cliente("Víctor Muniz dos Santos", "1687816", senha, "Ciência da Computação", "8", "", ""));
             addCliente(new Cliente("Rodrigo", "1488635", senha, "Ciência da Computação", "6", "", ""));
             addCliente(new Cliente("123", "123", senha, "Ciência da Computação", "6", "", ""));
+            addCliente(new Cliente("Gabriel Levis", "1371886", senha, "Ciência da Computação", "8", "", ""));
+            addCliente(new Cliente("Rafael Koteski", "1591860", senha, "Ciência da Computação", "7", "", ""));
         } catch (RuntimeException e){}
     }
     public static BancoClienteSingleton getInstance(){ return instance;}

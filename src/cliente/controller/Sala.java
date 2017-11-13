@@ -29,15 +29,18 @@ import org.json.JSONObject;
  */
 public class Sala {
 
-    private Cliente cliente;
-    private DatagramSocket clientSocket;
-    private JTextPane jTextPaneMensagens;
-    private JTable jTableClientesConectados, jTableVotos;
+    private final Cliente cliente;
+    private final DatagramSocket clientSocket;
+    private final JTextPane jTextPaneMensagens;
+    private final JTable jTableClientesConectados;
+    private final JTable jTableVotos;
     private String[] clientesConectados;
     private String[] votos;
     private Thread recebimentoThread;
+    private final Json jsonOp;
 
     public Sala(Cliente cliente, DatagramSocket clienteSocket, JTextPane jTextPaneMensagens, JTable jTableClientesConectados, JTable jTableVotos) {
+        this.jsonOp = new Json();
         this.cliente = cliente;
         this.clientSocket = clienteSocket;
         this.jTextPaneMensagens = jTextPaneMensagens;
@@ -54,16 +57,13 @@ public class Sala {
         StyledDocument doc = jTextPaneMensagens.getStyledDocument();
         try {
 
-            if (isClienteAtual) {
-                StyleConstants.setAlignment(texto, StyleConstants.ALIGN_RIGHT);
-                jTextPaneMensagens.setParagraphAttributes(texto, true);
+            StyleConstants.setForeground(texto, Color.GRAY);
 
-            } else {
-                StyleConstants.setAlignment(texto, StyleConstants.ALIGN_LEFT);
-                jTextPaneMensagens.setParagraphAttributes(texto, true);
+            if (isClienteAtual) {
+
+                doc.insertString(doc.getLength(), "> ", texto);
 
             }
-            StyleConstants.setForeground(texto, Color.GRAY);
             doc.insertString(doc.getLength(), origem + " diz:\n", texto);
             StyleConstants.setForeground(texto, Color.BLACK);
             doc.insertString(doc.getLength(), mensagem + "\n\n", texto);
@@ -86,5 +86,22 @@ public class Sala {
             isClienteAtual = true;
         }
         addMensagemVisao(json.getString("mensagem"), json.getString("criador"), isClienteAtual);
+    }
+
+    public void enviarMensagemSala(String mensagem) {
+
+//8 = mensagem do cliente pro servidor
+//{
+//	"tipo":8,
+//	"criador":"nome do cara",
+//	"mensagem":"de até 1000 caracteres"
+//}
+        JSONObject json = new JSONObject();
+
+        json.put("tipo", 8);
+        json.put("criador", cliente.getNome());
+        json.put("mensagem", mensagem);
+        jsonOp.enviarJSON(json, clientSocket, cliente.getIp(), cliente.getPorta());
+
     }
 }

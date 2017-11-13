@@ -16,6 +16,7 @@ public class Cliente {
     private String ip;
     private String porta;
     private String senha;
+    private int salaAtual;
 
     public String getSenha() {
         return senha;
@@ -44,6 +45,7 @@ public class Cliente {
     private String periodo;
 
     public Cliente(String nome, String ra, String senha, String curso, String periodo, String ip, String porta) {
+        this.salaAtual = -1;
         this.nome = nome;
         this.ra = ra;
         this.ip = ip;
@@ -54,6 +56,7 @@ public class Cliente {
     }
 
     public Cliente() {
+        this.salaAtual = -1;
     }
 
     public String getNome() {
@@ -86,6 +89,14 @@ public class Cliente {
 
     public void setPorta(String porta) {
         this.porta = porta;
+    }
+
+    public int getSalaAtual() {
+        return salaAtual;
+    }
+
+    public void setSalaAtual(int salaAtual) {
+        this.salaAtual = salaAtual;
     }
     
     
