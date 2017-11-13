@@ -79,70 +79,104 @@ public class ServerChatUDP extends javax.swing.JPanel {
                         serverTextArea.setText(serverTextArea.getText() + "\n"
                                 + receivePkt.getAddress().toString().split("/")[1] + ":"
                                 + receivePkt.getPort() + "\n" + receiveStr);
+                                        
 
-                        System.out.println("\n[SERVIDOR]: Mensagem recebida: " + receiveStr);
+                       // System.out.println("\n[SERVIDOR]: Mensagem recebida: " + receiveStr);
 
                         JSONObject jSONObject = new JSONObject(receiveStr);
                         String ip = receivePkt.getAddress().toString().split("/")[1];
+                          System.out.println("[SERVIDOR] <- [IP: " + ip + "  PORTA: " + receivePkt.getPort() +"] :  MENSAGEM RECEBIDA: " + receiveStr );
+                        if (jSONObject.has("tipo")) {
+                            switch ((int) jSONObject.get("tipo")) {
+                                case -1:
+                                    break;
+                                case 0:
+                                    System.out.println("[SERVIDOR] <- [IP: " + ip + "  PORTA: " + receivePkt.getPort() +"] : PEDIDO DE SOLICITAÇÃO DE LOGIN " );
+                                   // System.out.println("\n[SERVIDOR]: Solicitação de login");
+                                    if (jSONObject.has("ra") && jSONObject.has("senha")) {
+                                        if (verificaLogin(jSONObject.getString("ra"), jSONObject.get("senha").toString()) != null) {
+                                            addConexao((String) jSONObject.get("ra"), ip, receivePkt.getPort());
+                                            confimarLogin(jSONObject, ip, receivePkt.getPort());
+                                            enviarListaSalas(ip, receivePkt.getPort());
+                                        } else {
+                                            System.out.println("Usuário incorreto tentou se conectar.");
+                                            JSONObject json = new JSONObject();
+                                            json.put("tipo", 1);
+                                            enviarMensagem(json.toString(), ip, receivePkt.getPort());
+                                        }
+                                    } else {
+                                        //mensagem mal formada
+                                    }
 
-                        switch ((int) jSONObject.get("tipo")) {
-                            case -1:
-                                break;
-                            case 0:
-                                System.out.println("\n[SERVIDOR]: Solicitação de login");
-                                if (verificaLogin(jSONObject.getString("ra"), jSONObject.get("senha").toString()) != null) {
-                                    addConexao((String) jSONObject.get("ra"), ip, receivePkt.getPort());
-                                    confimarLogin(jSONObject, ip, receivePkt.getPort());
-                                    enviarListaSalas(ip, receivePkt.getPort());
-                                } else {
-                                    System.out.println("Usuário incorreto tentou se conectar.");
-                                    JSONObject json = new JSONObject();
-                                    json.put("tipo", 1);
-                                    enviarMensagem(json.toString(), ip, receivePkt.getPort());
-                                }
-                                break;
+                                    break;
 
-                            case 3:
-                                //criar sala
-                                System.out.println("\n[SERVIDOR]: Pedido de criação de sala");
+                                case 3:
+                                    boolean status = true;
+                                    //criar sala
+                                    if (jSONObject.has("opcoes") && jSONObject.has("nome") && jSONObject.has("descricao") && jSONObject.has("fim")) {
+                                      //  System.out.println("\n[SERVIDOR]: Pedido de criação de sala");
+                                        System.out.println("[IP: " + ip + " PORTA: " + receivePkt.getPort() +"] -> [SERVIDOR] : PEDIDO DE CRIAÇÃO DE SALA " );
+                                        BancoSalasSingleton bancoSalasSingleton = BancoSalasSingleton.getInstance();
+                                        ArrayList<Voto> opcoes = new ArrayList<>();
 
-                                BancoSalasSingleton bancoSalasSingleton = BancoSalasSingleton.getInstance();
-                                ArrayList<Voto> opcoes = new ArrayList<>();
+                                        JSONArray jArray = jSONObject.getJSONArray("opcoes");
+                                        System.out.println(jArray);
 
-                                JSONArray jArray = jSONObject.getJSONArray("opcoes");
-                                System.out.println(jArray);
+                                        Iterator it = jArray.iterator();
+                                        while (it.hasNext()) {
+                                            JSONObject jsono = (JSONObject) it.next();
+                                            if (jsono.has("nome")) {
+                                                Voto voto = new Voto(jsono.getString("nome"));
+                                                opcoes.add(voto);
+                                            } else {
+                                                opcoes.clear();
+                                                status = false;
+                                            }
+                                        }
+                                        if (status = true) {
 
-                                Iterator it = jArray.iterator();
-                                while (it.hasNext()) {
-                                    JSONObject jsono = (JSONObject) it.next();
-                                    Voto voto = new Voto(jsono.getString("nome"));
-                                    opcoes.add(voto);
-                                }
-                                String criador_ra = getConectado(ip, String.valueOf(receivePkt.getPort()))[0];
-                                enviaSalaBroadcast(bancoSalasSingleton.criarSala(criador_ra, jSONObject.getString("nome"), jSONObject.getString("descricao"), jSONObject.getString("fim"), opcoes), true);
+                                            String criador_ra = getConectado(ip, String.valueOf(receivePkt.getPort()))[0];
+                                            enviaSalaBroadcast(bancoSalasSingleton.criarSala(criador_ra, jSONObject.getString("nome"), jSONObject.getString("descricao"), jSONObject.getString("fim"), opcoes), true);
+                                            status = true;
+                                        } else {
+                                            JSONObject json = new JSONObject();
+                                            json.put("tipo", -1);
+                                            enviarMensagem(json.toString(), ip, receivePkt.getPort());
+                                        }
 
-                                break;
-                            case 5:
-                                // solicitação de acesso à sala
-                                System.out.println("\n[SERVIDOR]: Solicitação de acesso à sala");
-                                concederAcessoSala(jSONObject.getInt("id"), ip, String.valueOf(receivePkt.getPort()));
+                                    }
+                                    break;
+                                case 5:
+                                    // solicitação de acesso à sala
+                                    System.out.println("[IP: " + ip + " PORTA: " + receivePkt.getPort() +"] -> [SERVIDOR] : SOLICITAÇÃO DE ACESSO A SALA" );
 
-                                break;
-                            case 8:
-                                encaminharMensagem(BancoSalasSingleton.getInstance().getSala(
-                                    BancoClienteSingleton.getInstance().getCliente(
-                                    getConectado(ip, String.valueOf(receivePkt.getPort()))[0]).getSalaAtual()),
-                                    jSONObject.getString("criador"), jSONObject.getString("mensagem"));
-                                break;
-                            case 10:
-                                //logout
-                                System.out.println("Logout");
-                                removeConexao(ip, receivePkt.getPort());
-                                break;
-                            default:
-                                mensagemMalFormada(jSONObject, ip, receivePkt.getPort());
-                                System.out.println("Datagrama não suportado");
+                                  //  System.out.println("\n[SERVIDOR]: Solicitação de acesso à sala");
+                                    if (jSONObject.has("id")) {
+                                        concederAcessoSala(jSONObject.getInt("id"), ip, String.valueOf(receivePkt.getPort()));
+                                    } else {
+                                        JSONObject json = new JSONObject();
+                                        json.put("tipo", -1);
+                                        enviarMensagem(json.toString(), ip, receivePkt.getPort());
+                                    }
 
+                                    break;
+                                case 8:
+                                    
+                                    encaminharMensagem(BancoSalasSingleton.getInstance().getSala(
+                                            BancoClienteSingleton.getInstance().getCliente(
+                                                    getConectado(ip, String.valueOf(receivePkt.getPort()))[0]).getSalaAtual()),
+                                            jSONObject.getString("criador"), jSONObject.getString("mensagem"));
+                                    break;
+                                case 10:
+                                    //logout
+                                    System.out.println("Logout");
+                                    removeConexao(ip, receivePkt.getPort());
+                                    break;
+                                default:
+                                    mensagemMalFormada(jSONObject, ip, receivePkt.getPort());
+                                    System.out.println("Datagrama não suportado");
+
+                            }
                         }
                         Thread.sleep(1000);
                     }
@@ -259,7 +293,7 @@ public class ServerChatUDP extends javax.swing.JPanel {
         if (cliente == null) {
             return null;
         }
-        System.out.println(cliente.getSenha() + "\n" + senha);
+        //System.out.println(cliente.getSenha() + "\n" + senha);
         if (cliente.getSenha().equals(senha)) {
             return cliente;
         }
@@ -296,10 +330,12 @@ public class ServerChatUDP extends javax.swing.JPanel {
         String mensagemStr = obj.toString();
 
         if (enviarMensagem(mensagemStr, ip, porta)) {
-            System.out.println("\n[SERVIDOR]: Login confirmado com sucesso!");
+              System.out.println("[SERVIDOR] -> [IP: " + ip + " PORTA: " + receivePkt.getPort() +"] :  CONFIRMAÇÃO DE LOGIN BEM SUCEDIDA" );
+           // System.out.println("\n[SERVIDOR]: Login confirmado com sucesso!");
             return true;
         } else {
-            System.out.println("\n[SERVIDOR]: Erro ao confirmar o login!");
+              System.out.println("[SERVIDOR] -> [IP: " + ip + " PORTA: " + receivePkt.getPort() +"] :  CONFIRMAÇÃO DE LOGIN MAL SUCEDIDA" );
+         //   System.out.println("\n[SERVIDOR]: Erro ao confirmar o login!");
         }
         return false;
     }
@@ -318,11 +354,13 @@ public class ServerChatUDP extends javax.swing.JPanel {
                 enviar = new DatagramPacket(mensagemStr.getBytes(), mensagemStr.getBytes().length,
                         InetAddress.getByName(ip), porta);
                 serverDatagram.send(enviar);
-                System.out.println("\n[SERVIDOR]: Mensagem enviada: " + mensagemStr);
+                  System.out.println("[SERVIDOR] -> [IP: " + ip + " PORTA: " + receivePkt.getPort() +"] :  MENSAGEM ENVIADA: " + mensagemStr );
+              //  System.out.println("\n[SERVIDOR]: Mensagem enviada: "+ mensagemStr );
             }
 
         } catch (Exception e) {
-            System.out.println("\n[SERVIDOR]: Erro no método enviarMensagem!!!!\n" + e);
+             System.out.println("[SERVIDOR] -> [IP: " + ip + " PORTA: " + receivePkt.getPort() +"] : Erro no método enviarMensagem!!! \n" + e );
+            //System.out.println("\n[SERVIDOR]: Erro no método enviarMensagem!!!!\n" + e);
 
             return false;
         }

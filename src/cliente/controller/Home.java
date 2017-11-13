@@ -49,6 +49,7 @@ public class Home {
 
     private void recepcaoSala(JSONObject json, boolean novaSala) {
         BancoSalasSingleton bancoSalas = BancoSalasSingleton.getInstance();
+        
         int mensagens = novaSala ? 0 : json.getInt("mensagens");
         Sala sala = new Sala(json.getInt("id"),
                 json.getString("criador"),
