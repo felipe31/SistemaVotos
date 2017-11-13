@@ -90,7 +90,7 @@ public class Home {
         salaVisao.setVisible(true);
         homeVisao.setVisible(false);
         salaCtrl = salaVisao.getSalaCtrl();
-        
+
         BancoSalasSingleton bancoSalas = BancoSalasSingleton.getInstance();
 
         Sala sala = bancoSalas.getSala(Integer.parseInt(id));
@@ -123,16 +123,27 @@ public class Home {
 
                     switch (jsonObj.getInt("tipo")) {
                         case -1:
+                            System.out.println("\n[CLIENTE]: Mensagem mal formada");
+
                             break;
                         case 11:
+                            System.out.println("\n[CLIENTE]: Recepção de salas após o login");
                             recepcaoSala(jsonObj, false);
                             break;
                         case 4:
+                            System.out.println("\n[CLIENTE]: Recepção de sala nova");
                             recepcaoSala(jsonObj, true);
                             break;
+                        case 6:
+                            System.out.println("\n[CLIENTE]: Mensagem mal formada");
+
+                            break;
                         case 9:
-                            if(salaCtrl != null)
+                            System.out.println("\n[CLIENTE]: Recepção de mensagem");
+
+                            if (salaCtrl != null) {
                                 salaCtrl.recepcaoMensagem(jsonObj);
+                            }
                             break;
                         default:
                             mensagemMalFormada(jsonObj, ip, porta);
@@ -170,9 +181,10 @@ public class Home {
         json.put("pacote", jsonMsg);
         jsonOp.enviarJSON(json, clienteSocket, ip, porta);
     }
-    public void setSala(cliente.visao.Sala sv, cliente.controller.Sala sc){
+
+    public void setSala(cliente.visao.Sala sv, cliente.controller.Sala sc) {
         this.salaVisao = sv;
         this.salaCtrl = sc;
-        
+
     }
 }
