@@ -179,14 +179,12 @@ public class Sala {
     public boolean addVoto(String descricaoVoto, Cliente cliente) {
         int flag = 0;
         String votou = cliente.jaVotouNaSala(id);
-        System.out.println("entrou add voto sala");
         if (votou != null) {
             if (votou.equals(descricaoVoto)) {
 
                 return true;
             } else {
                 for (Voto v : opcoes) {
-                    System.out.println(v.getDescricao() + " - " + v.getContador());
                     if (v.getDescricao().equals(descricaoVoto)) {
                         v.setContador(v.getContador() + 1);
                         cliente.addVoto(id, descricaoVoto);
@@ -207,8 +205,6 @@ public class Sala {
             }
         } else {
             for (Voto v : opcoes) {
-                System.out.println(v.getDescricao() + " - " + v.getContador());
-
                 if (v.getDescricao().equals(descricaoVoto)) {
                     v.setContador(v.getContador() + 1);
                     cliente.addVoto(id, descricaoVoto);

@@ -90,52 +90,71 @@ public class ServerChatUDP extends javax.swing.JPanel {
                             switch ((int) jSONObject.get("tipo")) {
                                 case -1:
                                     break;
+//                                case 0:
+//                                    System.out.println("[SERVIDOR] <- [IP: " + ip + "  PORTA: " + receivePkt.getPort() + "] : PEDIDO DE SOLICITAÇÃO DE LOGIN ");
+//                                    if (jSONObject.has("ra") && jSONObject.has("senha")) {
+//
+//                                        Iterator verificador = clientesConectados.iterator();
+//
+//                                        if (!clientesConectados.isEmpty()) {
+//                                            while (verificador.hasNext()) {
+//                                                String[] aux = (String[]) verificador.next();
+//                                                if (aux[0].equals(jSONObject.getString("ra"))) {
+//                                                    //cliente conectado
+//                                                    System.out.println("Usuário esta conectado.");
+//                                                    JSONObject json = new JSONObject();
+//                                                    json.put("tipo", 1);
+//                                                    enviarMensagem(json.toString(), ip, receivePkt.getPort());
+//
+//                                                } else {
+//                                                    //cliente nao conectado
+//
+//                                                    if (verificaLogin(jSONObject.getString("ra"), jSONObject.get("senha").toString()) != null) {
+//                                                        addConexao((String) jSONObject.get("ra"), ip, receivePkt.getPort());
+//                                                        confimarLogin(jSONObject, ip, receivePkt.getPort());
+//                                                        enviarListaSalas(ip, receivePkt.getPort());
+//                                                    } else {
+//                                                        System.out.println("Usuário incorreto tentou se conectar.");
+//                                                        JSONObject json = new JSONObject();
+//                                                        json.put("tipo", 1);
+//                                                        enviarMensagem(json.toString(), ip, receivePkt.getPort());
+//                                                    }
+//                                                }
+//
+//                                            }
+//                                        } else {
+//
+//                                            if (verificaLogin(jSONObject.getString("ra"), jSONObject.get("senha").toString()) != null) {
+//                                                addConexao((String) jSONObject.get("ra"), ip, receivePkt.getPort());
+//                                                confimarLogin(jSONObject, ip, receivePkt.getPort());
+//                                                enviarListaSalas(ip, receivePkt.getPort());
+//                                            } else {
+//                                                System.out.println("Usuário incorreto tentou se conectar.");
+//                                                JSONObject json = new JSONObject();
+//                                                json.put("tipo", 1);
+//                                                enviarMensagem(json.toString(), ip, receivePkt.getPort());
+//                                            }
+//                                        }
+//
+//                                    } else {
+//                                        //mensagem mal formada
+//                                    }
+//
+//                                    break;
                                 case 0:
                                     System.out.println("[SERVIDOR] <- [IP: " + ip + "  PORTA: " + receivePkt.getPort() + "] : PEDIDO DE SOLICITAÇÃO DE LOGIN ");
+                                    // System.out.println("\n[SERVIDOR]: Solicitação de login");
                                     if (jSONObject.has("ra") && jSONObject.has("senha")) {
-
-                                        Iterator verificador = clientesConectados.iterator();
-
-                                        if (!clientesConectados.isEmpty()) {
-                                            while (verificador.hasNext()) {
-                                                String[] aux = (String[]) verificador.next();
-                                                if (aux[0].equals(jSONObject.getString("ra"))) {
-                                                    //cliente conectado
-                                                    System.out.println("Usuário esta conectado.");
-                                                    JSONObject json = new JSONObject();
-                                                    json.put("tipo", 1);
-                                                    enviarMensagem(json.toString(), ip, receivePkt.getPort());
-
-                                                } else {
-                                                    //cliente nao conectado
-
-                                                    if (verificaLogin(jSONObject.getString("ra"), jSONObject.get("senha").toString()) != null) {
-                                                        addConexao((String) jSONObject.get("ra"), ip, receivePkt.getPort());
-                                                        confimarLogin(jSONObject, ip, receivePkt.getPort());
-                                                        enviarListaSalas(ip, receivePkt.getPort());
-                                                    } else {
-                                                        System.out.println("Usuário incorreto tentou se conectar.");
-                                                        JSONObject json = new JSONObject();
-                                                        json.put("tipo", 1);
-                                                        enviarMensagem(json.toString(), ip, receivePkt.getPort());
-                                                    }
-                                                }
-
-                                            }
+                                        if (verificaLogin(jSONObject.getString("ra"), jSONObject.get("senha").toString()) != null) {
+                                            addConexao((String) jSONObject.get("ra"), ip, receivePkt.getPort());
+                                            confimarLogin(jSONObject, ip, receivePkt.getPort());
+                                            enviarListaSalas(ip, receivePkt.getPort());
                                         } else {
-
-                                            if (verificaLogin(jSONObject.getString("ra"), jSONObject.get("senha").toString()) != null) {
-                                                addConexao((String) jSONObject.get("ra"), ip, receivePkt.getPort());
-                                                confimarLogin(jSONObject, ip, receivePkt.getPort());
-                                                enviarListaSalas(ip, receivePkt.getPort());
-                                            } else {
-                                                System.out.println("Usuário incorreto tentou se conectar.");
-                                                JSONObject json = new JSONObject();
-                                                json.put("tipo", 1);
-                                                enviarMensagem(json.toString(), ip, receivePkt.getPort());
-                                            }
+                                            System.out.println("Usuário incorreto tentou se conectar.");
+                                            JSONObject json = new JSONObject();
+                                            json.put("tipo", 1);
+                                            enviarMensagem(json.toString(), ip, receivePkt.getPort());
                                         }
-
                                     } else {
                                         //mensagem mal formada
                                     }
@@ -194,7 +213,7 @@ public class ServerChatUDP extends javax.swing.JPanel {
                                 case 8:
                                     //enviar mensagem para a sala que vc esta
                                     encaminharMensagem(BancoSalasSingleton.getInstance().getSala(BancoClienteSingleton.getInstance().getCliente(
-                                                    getConectado(ip, String.valueOf(receivePkt.getPort()))[0]).getSalaAtual()),
+                                            getConectado(ip, String.valueOf(receivePkt.getPort()))[0]).getSalaAtual()),
                                             jSONObject.getString("criador"), jSONObject.getString("mensagem"));
                                     break;
                                 case 10:
@@ -204,8 +223,8 @@ public class ServerChatUDP extends javax.swing.JPanel {
                                     break;
                                 case 15:
                                     System.out.println("[IP: " + ip + " PORTA: " + receivePkt.getPort() + "] -> [SERVIDOR] : VOTO");
-                                    if(armazenarVoto(jSONObject.getInt("sala"), jSONObject.getString("opcao"), ip, receivePkt.getPort()));
-                                        enviarMensagem(jSONObject.toString(), ip, receivePkt.getPort());
+                                    if (armazenarVoto(jSONObject.getInt("sala"), jSONObject.getString("opcao"), ip, receivePkt.getPort()));
+                                    enviarMensagem(jSONObject.toString(), ip, receivePkt.getPort());
                                     break;
                                 default:
                                     mensagemMalFormada(jSONObject, ip, receivePkt.getPort());
@@ -672,10 +691,10 @@ public class ServerChatUDP extends javax.swing.JPanel {
         Iterator it = sala.getMensagemDaSala().iterator();
         while (it.hasNext()) {
             Mensagem m = (Mensagem) it.next();
-            System.out.println(m.getMensagem());
-            System.out.println(m.getCriador());
-            System.out.println(m.getTimestamp());
-            System.out.println(m.getId());
+//            System.out.println(m.getMensagem());
+//            System.out.println(m.getCriador());
+//            System.out.println(m.getTimestamp());
+//            System.out.println(m.getId());
 //            JSONObject json = new JSONObject();
 //            json.put("tipo",9);
 //            json.put("id",m.getTimestamp());
@@ -741,8 +760,8 @@ public class ServerChatUDP extends javax.swing.JPanel {
     private boolean armazenarVoto(int idSala, String opcao, String ip, int porta) {
         BancoSalasSingleton salasBanco = BancoSalasSingleton.getInstance();
         Sala sala = salasBanco.getSala(idSala);
-        Cliente cliente = BancoClienteSingleton.getInstance().getCliente(getConectado(ip, String.valueOf(porta))[0]);        
-        
+        Cliente cliente = BancoClienteSingleton.getInstance().getCliente(getConectado(ip, String.valueOf(porta))[0]);
+
         return sala.addVoto(opcao, cliente);
     }
 }
