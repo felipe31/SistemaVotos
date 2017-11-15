@@ -49,7 +49,7 @@ public class Home {
 
     private void recepcaoSala(JSONObject json, boolean novaSala) {
         BancoSalasSingleton bancoSalas = BancoSalasSingleton.getInstance();
-        
+
         int mensagens = novaSala ? 0 : json.getInt("mensagens");
         Sala sala = new Sala(json.getInt("id"),
                 json.getString("criador"),
@@ -122,33 +122,41 @@ public class Home {
                     JSONObject jsonObj = new JSONObject(receiveStr);
                     System.out.println("\n[CLIENTE]: Mensagem recebida: " + jsonObj.toString());
 
-                    switch (jsonObj.getInt("tipo")) {
-                        case -1:
-                            System.out.println("\n[CLIENTE]: Mensagem mal formada");
+                    if (jsonObj.has("tipo")) {
+                        switch (jsonObj.getInt("tipo")) {
+                            case -1:
+                                System.out.println("\n[CLIENTE]: Mensagem mal formada");
 
-                            break;
-                        case 11:
-                            System.out.println("\n[CLIENTE]: Recepção de salas após o login");
-                            recepcaoSala(jsonObj, false);
-                            break;
-                        case 4:
-                            System.out.println("\n[CLIENTE]: Recepção de sala nova");
-                            recepcaoSala(jsonObj, true);
-                            break;
-                        case 6:
-                            System.out.println("\n[CLIENTE]: Mensagem mal formada");
+                                break;
+                            case 11:
+                                System.out.println("\n[CLIENTE]: Recepção de salas após o login");
+                                recepcaoSala(jsonObj, false);
+                                break;
+                            case 4:
+                                System.out.println("\n[CLIENTE]: Recepção de sala nova");
+                                recepcaoSala(jsonObj, true);
+                                break;
+                            case 6:
+                                System.out.println("\n[CLIENTE]: Mensagem mal formada");
 
-                            break;
-                        case 9:
-                            System.out.println("\n[CLIENTE]: Recepção de mensagem");
+                                break;
+                            case 9:
+                                System.out.println("\n[CLIENTE]: Recepção de mensagem");
 
-                            if (salaCtrl != null) {
-                                salaCtrl.recepcaoMensagem(jsonObj);
-                            }
-                            break;
-                        default:
-                            mensagemMalFormada(jsonObj, ip, porta);
-                            System.out.println("Datagrama não suportado");
+                                if (salaCtrl != null) {
+                                    salaCtrl.recepcaoMensagem(jsonObj);
+                                }
+                                break;
+                            default:
+                                mensagemMalFormada(jsonObj, ip, porta);
+                                System.out.println("Datagrama não suportado");
+                        }
+
+                    }
+                    else
+                    {
+                        //System.out.println("\n[CLIENTE]: Recepção de mensagem");
+
                     }
 
                     receiveStr = null;

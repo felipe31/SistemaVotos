@@ -195,6 +195,7 @@ public class Sala extends javax.swing.JFrame {
 
         if (!jTextFieldMensagem.getText().equals("")) {
             salaCtrl.enviarMensagemSala(jTextFieldMensagem.getText());
+            jTextFieldMensagem.setText("");
         } else{
             JOptionPane.showMessageDialog(null, "Não há nada para enviar!", "Mensagem vazia!", JOptionPane.WARNING_MESSAGE);
         }

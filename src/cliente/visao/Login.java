@@ -163,12 +163,16 @@ public class Login extends javax.swing.JFrame {
 
                 // Confere login
                 if(jsonObj != null){
-                    cliente.setNome(jsonObj.getString("nome"));
+                    if(jsonObj.has("nome") && jsonObj.has("tamanho"))
+                    {
+                         cliente.setNome(jsonObj.getString("nome"));
                     
                     new Home(cliente, loginCtrl, jsonObj.getInt("tamanho")).setVisible(true);
                     this.dispose();
                     JOptionPane.showMessageDialog(this, "Sucesso no Login",
                             "Login realizado com sucesso!", JOptionPane.INFORMATION_MESSAGE);
+                    }
+                   
                 }
                 else
                     JOptionPane.showMessageDialog(this, "Erro ao realizar o login!\nTente novamente.",
