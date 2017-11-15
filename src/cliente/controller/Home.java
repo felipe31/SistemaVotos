@@ -122,75 +122,83 @@ public class Home {
                     JSONObject jsonObj = new JSONObject(receiveStr);
                     System.out.println("\n[CLIENTE]: Mensagem recebida: " + jsonObj.toString());
 
-                    switch (jsonObj.getInt("tipo")) {
-                        case -1:
-                            System.out.println("\n[CLIENTE]: Mensagem mal formada");
+                    if (jsonObj.has("tipo")) {
+                        //System.out.println("\n[CLIENTE]: Recepção de mensagem");
 
-                            break;
-                        case 11:
-                            System.out.println("\n[CLIENTE]: Recepção de salas após o login");
-                            receberSala(jsonObj, false);
-                            break;
-                        case 4:
-                            System.out.println("\n[CLIENTE]: Recepção de sala nova");
-                            receberSala(jsonObj, true);
-                            break;
-                        case 6:
-                            System.out.println("\n[CLIENTE]: Mensagem mal formada");
-                            if (salaCtrl != null) {
-                                salaCtrl.receberClientesConectados(jsonObj.getJSONArray("usuarios"));
-                            }
+                        switch (jsonObj.getInt("tipo")) {
+                            case -1:
+                                System.out.println("\n[CLIENTE]: Mensagem mal formada");
 
-                            break;
-                        case 7:
-                            if (salaCtrl != null) {
-                                System.out.println("\n[CLIENTE]: Recepção de status da votação");
-                                salaCtrl.receberVotacao(jsonObj.getJSONArray("resultados"));
-                            }
-                            break;
-                            
-                        case 9:
-                            System.out.println("\n[CLIENTE]: Recepção de mensagem");
+                                break;
+                            case 11:
+                                System.out.println("\n[CLIENTE]: Recepção de salas após o login");
+                                receberSala(jsonObj, false);
+                                break;
+                            case 4:
+                                System.out.println("\n[CLIENTE]: Recepção de sala nova");
+                                receberSala(jsonObj, true);
+                                break;
+                            case 6:
+                                System.out.println("\n[CLIENTE]: Mensagem mal formada");
+                                if (salaCtrl != null) {
+                                    salaCtrl.receberClientesConectados(jsonObj.getJSONArray("usuarios"));
+                                }
 
-                            if (salaCtrl != null) {
-                                salaCtrl.receberMensagem(jsonObj);
-                            }
-                            break;
-                        case 15:
-                            if (salaCtrl != null) {
-                                votoRetornou = true;
-                                System.out.println("\n[CLIENTE]: Confirmação de voto");
-                                JOptionPane.showMessageDialog(null, "Voto realizado com sucesso!\nVocê votou na opção:\n"+jsonObj.getString("opcao"), "Voto realizado", JOptionPane.INFORMATION_MESSAGE);
-                            }
-                            break;
-                        default:
-                            mensagemMalFormada(jsonObj, ip, porta);
-                            System.out.println("Datagrama não suportado");
+                                break;
+                            case 7:
+                                if (salaCtrl != null) {
+                                    System.out.println("\n[CLIENTE]: Recepção de status da votação");
+                                    salaCtrl.receberVotacao(jsonObj.getJSONArray("resultados"));
+                                }
+                                break;
+
+                            case 9:
+                                System.out.println("\n[CLIENTE]: Recepção de mensagem");
+
+                                if (salaCtrl != null) {
+                                    salaCtrl.receberMensagem(jsonObj);
+                                }
+                                break;
+                            case 15:
+                                if (salaCtrl != null) {
+                                    votoRetornou = true;
+                                    System.out.println("\n[CLIENTE]: Confirmação de voto");
+                                    JOptionPane.showMessageDialog(null, "Voto realizado com sucesso!\nVocê votou na opção:\n" + jsonObj.getString("opcao"), "Voto realizado", JOptionPane.INFORMATION_MESSAGE);
+                                }
+                                break;
+                            default:
+                                mensagemMalFormada(jsonObj, ip, porta);
+                                System.out.println("Datagrama não suportado");
+                        }
+                    } else {
                     }
 
                     receiveStr = null;
-                            Thread.sleep(500);
-                    }
-                }catch (UnknownHostException ex) {
+                    Thread.sleep(500);
+                }
+            } catch (UnknownHostException ex) {
                 Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
-            }catch (SocketException e) {
+            } catch (SocketException e) {
                 Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, e);
-            }catch (IOException e) {
+            } catch (IOException e) {
                 Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, e);
-            }catch (InterruptedException e) {
-                Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, e);
-            }
-
-            });
-
-            recebimentoThread.start();
-            try {
-                Thread.sleep(100);
             } catch (InterruptedException e) {
                 Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, e);
             }
-            return null;
+
         }
+        );
+
+        recebimentoThread.start();
+
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, e);
+        }
+
+        return null;
+    }
 
     private void mensagemMalFormada(JSONObject jsonMsg, String ip, String porta) {
         JSONObject json = new JSONObject();
@@ -205,20 +213,22 @@ public class Home {
         this.salaCtrl = sc;
 
     }
-    
+
     public void iniciaThreadVoto() {
         new Thread(() -> {
             try {
                 Thread.sleep(1000);
-                if(!votoRetornou) {
+                if (!votoRetornou) {
                     JOptionPane.showMessageDialog(null, "Não foi possível confirmar o voto!\nTente novamente.", "Erro na confirmação do voto", JOptionPane.ERROR_MESSAGE);
-                }
-                else
+                } else {
                     votoRetornou = false;
+
+                }
             } catch (InterruptedException ex) {
-                Logger.getLogger(cliente.visao.Home.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(cliente.visao.Home.class
+                        .getName()).log(Level.SEVERE, null, ex);
             }
         }).start();
     }
-    
+
 }

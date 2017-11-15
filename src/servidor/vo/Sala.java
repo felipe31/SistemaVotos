@@ -6,7 +6,9 @@
 package servidor.vo;
 
 import java.util.ArrayList;
-import servidor.controller.BancoClienteSingleton;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
 
 /**
  *
@@ -25,7 +27,25 @@ public class Sala {
     private String fim;
     private boolean status = true;
     private int qtdMensagens;
-    private ArrayList<Cliente> clientesConectados;
+    private HashSet<Cliente> clientesConectados;
+    private ArrayList<Mensagem> mensagemDaSala = new ArrayList<>();
+
+    public ArrayList<Mensagem> getMensagemDaSala() {
+        int id = -2147483647;
+        Collections.sort(mensagemDaSala, new ComparadorDeMensagem());
+        ArrayList<Mensagem> list = new ArrayList<>();
+        Iterator it = mensagemDaSala.iterator();
+        while (it.hasNext()) {
+            Mensagem m = (Mensagem) it.next();
+            m.setId(id);
+            id++;
+        }
+        return mensagemDaSala;
+    }
+
+    public void setMensagemDaSala(ArrayList<Mensagem> mensagemDaSala) {
+        this.mensagemDaSala = mensagemDaSala;
+    }
 
     public Sala(int id, String criador_ra, String criador_nome, String nome, String descricao, String fim, ArrayList<Voto> opcoes) {
         this.criador_ra = criador_ra;
@@ -37,7 +57,7 @@ public class Sala {
         this.fim = String.valueOf(fim);
         this.qtdMensagens = 0;
         this.opcoes = opcoes;
-        clientesConectados = new ArrayList<>();
+        clientesConectados = new HashSet<>();
         qtdVotos = 0;
     }
 
@@ -125,7 +145,7 @@ public class Sala {
         return id;
     }
 
-    public ArrayList<Cliente> getClientesConectados() {
+    public HashSet<Cliente> getClientesConectados() {
         return clientesConectados;
     }
 
@@ -162,6 +182,7 @@ public class Sala {
         System.out.println("entrou add voto sala");
         if (votou != null) {
             if (votou.equals(descricaoVoto)) {
+
                 return true;
             } else {
                 for (Voto v : opcoes) {
