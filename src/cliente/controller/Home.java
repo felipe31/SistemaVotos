@@ -47,9 +47,9 @@ public class Home {
         abrirRecepcaoJSON(clienteSocket, cliente.getIp(), cliente.getPorta());
     }
 
-    private void recepcaoSala(JSONObject json, boolean novaSala) {
+    private void receberSala(JSONObject json, boolean novaSala) {
         BancoSalasSingleton bancoSalas = BancoSalasSingleton.getInstance();
-        
+
         int mensagens = novaSala ? 0 : json.getInt("mensagens");
         Sala sala = new Sala(json.getInt("id"),
                 json.getString("criador"),
@@ -129,21 +129,24 @@ public class Home {
                             break;
                         case 11:
                             System.out.println("\n[CLIENTE]: Recepção de salas após o login");
-                            recepcaoSala(jsonObj, false);
+                            receberSala(jsonObj, false);
                             break;
                         case 4:
                             System.out.println("\n[CLIENTE]: Recepção de sala nova");
-                            recepcaoSala(jsonObj, true);
+                            receberSala(jsonObj, true);
                             break;
                         case 6:
                             System.out.println("\n[CLIENTE]: Mensagem mal formada");
+                            if (salaCtrl != null) {
+                                salaCtrl.receberClientesConectados(jsonObj.getJSONArray("usuarios"));
+                            }
 
                             break;
                         case 9:
                             System.out.println("\n[CLIENTE]: Recepção de mensagem");
 
                             if (salaCtrl != null) {
-                                salaCtrl.recepcaoMensagem(jsonObj);
+                                salaCtrl.receberMensagem(jsonObj);
                             }
                             break;
                         default:

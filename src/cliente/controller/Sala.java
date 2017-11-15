@@ -19,8 +19,11 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.table.DefaultTableModel;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
@@ -38,6 +41,8 @@ public class Sala {
     private String[] votos;
     private Thread recebimentoThread;
     private final Json jsonOp;
+    private final DefaultTableModel votosTableModel;
+    private final DefaultTableModel clientesTableModel;
 
     public Sala(Cliente cliente, DatagramSocket clienteSocket, JTextPane jTextPaneMensagens, JTable jTableClientesConectados, JTable jTableVotos) {
         this.jsonOp = new Json();
@@ -48,9 +53,12 @@ public class Sala {
         this.jTableVotos = jTableVotos;
 //        this.clientesConectados = clientesConectados;
 //        this.votos = votos;
+        this.votosTableModel = (DefaultTableModel) this.jTableVotos.getModel();
+        this.clientesTableModel = (DefaultTableModel) this.jTableClientesConectados.getModel();
 
     }
 
+    ///////////////////////////// TRATAMENTO DE MENSAGENS ////////////////////////////////////////////////////////
     private void addMensagemVisao(String mensagem, String origem, boolean isClienteAtual) {
         SimpleAttributeSet texto = new SimpleAttributeSet();
 
@@ -74,7 +82,7 @@ public class Sala {
         }
     }
 
-    public void recepcaoMensagem(JSONObject json) {
+    public void receberMensagem(JSONObject json) {
 //    9 = mensagem do servidor
 //	"tipo":9,
 //	"id":numero_da_mensagem,
@@ -104,4 +112,17 @@ public class Sala {
         jsonOp.enviarJSON(json, clientSocket, cliente.getIp(), cliente.getPorta());
 
     }
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////// CLIENTES CONECTADOS ////////////////////////////////////////////////////////
+    public void receberClientesConectados(JSONArray jsonConectados) {
+        JSONObject jsonObj;
+        clientesTableModel.getDataVector().removeAllElements();
+        for (int i = 0; i < jsonConectados.length(); i++) {
+            jsonObj = jsonConectados.getJSONObject(i);
+            clientesTableModel.addRow(new Object[]{jsonObj.getString("nome")}); 
+        }
+
+    }
+
 }
