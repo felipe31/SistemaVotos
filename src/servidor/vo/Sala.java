@@ -6,6 +6,7 @@
 package servidor.vo;
 
 import java.util.ArrayList;
+import servidor.controller.BancoClienteSingleton;
 
 /**
  *
@@ -137,8 +138,8 @@ public class Sala {
         }
         return null;
     }
-    
-    public Cliente getClienteConectado(String ip, String porta){
+
+    public Cliente getClienteConectado(String ip, String porta) {
         for (Cliente c : clientesConectados) {
             if (c.getIp().equals(ip) && c.getPorta().equals(porta)) {
                 return c;
@@ -154,20 +155,51 @@ public class Sala {
     public void removeClienteConectado(Cliente cliente) {
         clientesConectados.remove(cliente);
     }
-    
-    public boolean addVoto(String descricaoVoto, Cliente cliente){
-        for(Voto v : opcoes){
-            if(v.getDescricao().equals(descricaoVoto)){
-                v.setContador(v.getContador()+1);
-                qtdVotos++;
-                        
+
+    public boolean addVoto(String descricaoVoto, Cliente cliente) {
+        int flag = 0;
+        String votou = cliente.jaVotouNaSala(id);
+        System.out.println("entrou add voto sala");
+        if (votou != null) {
+            if (votou.equals(descricaoVoto)) {
                 return true;
+            } else {
+                for (Voto v : opcoes) {
+                    System.out.println(v.getDescricao() + " - " + v.getContador());
+                    if (v.getDescricao().equals(descricaoVoto)) {
+                        v.setContador(v.getContador() + 1);
+                        cliente.addVoto(id, descricaoVoto);
+                        qtdVotos++;
+                        flag++;
+                        if (flag == 2) {
+                            return true;
+                        }
+                    } else if (v.getDescricao().equals(votou)) {
+                        v.setContador(v.getContador() - 1);
+                        qtdVotos--;
+                        flag++;
+                        if (flag == 2) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        } else {
+            for (Voto v : opcoes) {
+                System.out.println(v.getDescricao() + " - " + v.getContador());
+
+                if (v.getDescricao().equals(descricaoVoto)) {
+                    v.setContador(v.getContador() + 1);
+                    cliente.addVoto(id, descricaoVoto);
+                    qtdVotos++;
+                    return true;
+                }
             }
         }
         return false;
     }
 
-    public int getQtdVotos(){
+    public int getQtdVotos() {
         return qtdVotos;
     }
 }

@@ -5,6 +5,9 @@
  */
 package servidor.vo;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  *
  * @author Samsung
@@ -17,6 +20,8 @@ public class Cliente {
     private String porta;
     private String senha;
     private int salaAtual;
+    private Map<Integer, String> salasVotadas;
+    
 
     public String getSenha() {
         return senha;
@@ -53,6 +58,7 @@ public class Cliente {
         this.senha = senha;
         this.curso = curso ;
         this.periodo = periodo;
+        salasVotadas = new HashMap<>();
     }
 
     public Cliente() {
@@ -99,6 +105,12 @@ public class Cliente {
         this.salaAtual = salaAtual;
     }
     
+    public void addVoto(Integer idSala, String opcao){
+        salasVotadas.put(idSala, opcao);
+    }
     
+    public String jaVotouNaSala(int idSala){
+        return salasVotadas.get(idSala);
+    }
     
 }

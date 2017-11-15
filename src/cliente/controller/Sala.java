@@ -13,15 +13,7 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 import cliente.vo.*;
-import java.io.IOException;
-import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.SocketException;
-import java.net.UnknownHostException;
-import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -43,19 +35,18 @@ public class Sala {
     private final Json jsonOp;
     private final DefaultTableModel votosTableModel;
     private final DefaultTableModel clientesTableModel;
+    private final int id_sala;
 
-    public Sala(Cliente cliente, DatagramSocket clienteSocket, JTextPane jTextPaneMensagens, JTable jTableClientesConectados, JTable jTableVotos) {
+    public Sala(Cliente cliente, DatagramSocket clienteSocket, JTextPane jTextPaneMensagens, JTable jTableClientesConectados, JTable jTableVotos, int id_sala) {
         this.jsonOp = new Json();
         this.cliente = cliente;
         this.clientSocket = clienteSocket;
         this.jTextPaneMensagens = jTextPaneMensagens;
         this.jTableClientesConectados = jTableClientesConectados;
         this.jTableVotos = jTableVotos;
-//        this.clientesConectados = clientesConectados;
-//        this.votos = votos;
         this.votosTableModel = (DefaultTableModel) this.jTableVotos.getModel();
         this.clientesTableModel = (DefaultTableModel) this.jTableClientesConectados.getModel();
-
+        this.id_sala = id_sala;
     }
 
     ///////////////////////////// TRATAMENTO DE MENSAGENS ////////////////////////////////////////////////////////
@@ -124,5 +115,33 @@ public class Sala {
         }
 
     }
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////// TRATAMENTO DE VOTOS ////////////////////////////////////////////////////////
+    public void receberVotacao(JSONArray jsonArray) {
+        JSONObject json;
+        votosTableModel.getDataVector().removeAllElements();
+        for(int i = 0; i < jsonArray.length(); i++){
+            json = jsonArray.getJSONObject(i);
+            votosTableModel.addRow(json.keySet().toArray());
+        }
+    }
+
+    public void enviarVoto(String opcao) {
+//        15 = voto
+//{
+//	"tipo":15,
+//	"sala":id_da_sala,
+//	"opcao":"nome_da_opção"
+//}
+        JSONObject json = new JSONObject();
+        
+        json.put("tipo", 15);
+        json.put("sala", id_sala);
+        json.put("opcao", opcao);
+        
+        jsonOp.enviarJSON(json, clientSocket, cliente.getIp(), cliente.getPorta());
+    }
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 }

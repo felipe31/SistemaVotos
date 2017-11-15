@@ -38,12 +38,12 @@ public class Sala extends javax.swing.JFrame {
         initComponents();
     }
 
-    public Sala(cliente.visao.Home homeVisao, Cliente cliente, DatagramSocket clienteSocket) {
+    public Sala(cliente.visao.Home homeVisao, Cliente cliente, DatagramSocket clienteSocket, int id_sala) {
         initComponents();
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         this.homeVisao = homeVisao;
-        salaCtrl = new cliente.controller.Sala(cliente, clienteSocket, jTextPaneMensagens, jTableClientesConectados, jTableVotos);
+        salaCtrl = new cliente.controller.Sala(cliente, clienteSocket, jTextPaneMensagens, jTableClientesConectados, jTableVotos, id_sala);
 
         clientesConectadosTable = iniciaJTable(jTableClientesConectados);
         votosTable = iniciaJTable(jTableVotos);
@@ -69,7 +69,7 @@ public class Sala extends javax.swing.JFrame {
             public void valueChanged(ListSelectionEvent e) {
                 if (jTableVotos.getSelectedRow() > -1) {
                     jButtonVotar.setEnabled(true);
-                    System.out.println(jTableVotos.getValueAt(jTableVotos.getSelectedRow(), 0).toString());
+//                    System.out.println(jTableVotos.getValueAt(jTableVotos.getSelectedRow(), 0).toString());
                 }
 
             }
@@ -223,10 +223,12 @@ public class Sala extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextFieldMensagemActionPerformed
 
     private void jButtonVotarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonVotarActionPerformed
-//        jTableVotos.getMouseWheelListeners()
         String opcao = String.valueOf(votosTable.getValueAt(jTableVotos.getSelectedRow(), 0));
         if (opcao != null) {
-            JOptionPane.showConfirmDialog(this, "O seu voto será para a opção:\n" + opcao + "\nConfirmar?");
+            if(JOptionPane.showConfirmDialog(this, "O seu voto será para a opção:\n" + opcao + "\n\nConfirmar voto?", "Confirmação de voto", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION){
+                salaCtrl.enviarVoto(opcao);
+                homeVisao.getHomeCtrl().iniciaThreadVoto();
+            }
         }
     }//GEN-LAST:event_jButtonVotarActionPerformed
 

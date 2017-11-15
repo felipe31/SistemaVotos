@@ -17,8 +17,7 @@ import java.net.UnknownHostException;
 import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JTable;
-import javax.swing.JTextPane;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import org.json.JSONObject;
 
@@ -37,6 +36,7 @@ public class Home {
     private cliente.controller.Sala salaCtrl = null;
     private cliente.visao.Sala salaVisao = null;
     private cliente.visao.Home homeVisao;
+    private boolean votoRetornou;
 
     public Home(cliente.visao.Home homeVisao, Cliente cliente, DatagramSocket clienteSocket, DefaultTableModel salasTabela, int qtdSalas) {
         this.homeVisao = homeVisao;
@@ -87,7 +87,7 @@ public class Home {
 //	"tipo":5,
 //	"id":id_da_sala_que_o_cliente_quer_entrar
 //}
-        salaVisao = new cliente.visao.Sala(homeVisao, cliente, clienteSocket);
+        salaVisao = new cliente.visao.Sala(homeVisao, cliente, clienteSocket, Integer.parseInt(id));
         salaVisao.setVisible(true);
         homeVisao.setVisible(false);
         salaCtrl = salaVisao.getSalaCtrl();
@@ -142,11 +142,25 @@ public class Home {
                             }
 
                             break;
+                        case 7:
+                            if (salaCtrl != null) {
+                                System.out.println("\n[CLIENTE]: Recepção de status da votação");
+                                salaCtrl.receberVotacao(jsonObj.getJSONArray("resultados"));
+                            }
+                            break;
+                            
                         case 9:
                             System.out.println("\n[CLIENTE]: Recepção de mensagem");
 
                             if (salaCtrl != null) {
                                 salaCtrl.receberMensagem(jsonObj);
+                            }
+                            break;
+                        case 15:
+                            if (salaCtrl != null) {
+                                votoRetornou = true;
+                                System.out.println("\n[CLIENTE]: Confirmação de voto");
+                                JOptionPane.showMessageDialog(null, "Voto realizado com sucesso!\nVocê votou na opção:\n"+jsonObj.getString("opcao"), "Voto realizado", JOptionPane.INFORMATION_MESSAGE);
                             }
                             break;
                         default:
@@ -155,28 +169,28 @@ public class Home {
                     }
 
                     receiveStr = null;
-                    Thread.sleep(500);
-                }
-            } catch (UnknownHostException ex) {
+                            Thread.sleep(500);
+                    }
+                }catch (UnknownHostException ex) {
                 Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (SocketException e) {
+            }catch (SocketException e) {
                 Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, e);
-            } catch (IOException e) {
+            }catch (IOException e) {
                 Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, e);
-            } catch (InterruptedException e) {
+            }catch (InterruptedException e) {
                 Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, e);
             }
 
-        });
+            });
 
-        recebimentoThread.start();
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
-            Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, e);
+            recebimentoThread.start();
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, e);
+            }
+            return null;
         }
-        return null;
-    }
 
     private void mensagemMalFormada(JSONObject jsonMsg, String ip, String porta) {
         JSONObject json = new JSONObject();
@@ -191,4 +205,20 @@ public class Home {
         this.salaCtrl = sc;
 
     }
+    
+    public void iniciaThreadVoto() {
+        new Thread(() -> {
+            try {
+                Thread.sleep(1000);
+                if(!votoRetornou) {
+                    JOptionPane.showMessageDialog(null, "Não foi possível confirmar o voto!\nTente novamente.", "Erro na confirmação do voto", JOptionPane.ERROR_MESSAGE);
+                }
+                else
+                    votoRetornou = false;
+            } catch (InterruptedException ex) {
+                Logger.getLogger(cliente.visao.Home.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }).start();
+    }
+    
 }
