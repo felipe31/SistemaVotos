@@ -47,7 +47,7 @@ public class Home {
         abrirRecepcaoJSON(clienteSocket, cliente.getIp(), cliente.getPorta());
     }
 
-    private void recepcaoSala(JSONObject json, boolean novaSala) {
+    private void receberSala(JSONObject json, boolean novaSala) {
         BancoSalasSingleton bancoSalas = BancoSalasSingleton.getInstance();
 
         int mensagens = novaSala ? 0 : json.getInt("mensagens");
@@ -122,6 +122,7 @@ public class Home {
                     JSONObject jsonObj = new JSONObject(receiveStr);
                     System.out.println("\n[CLIENTE]: Mensagem recebida: " + jsonObj.toString());
 
+<<<<<<< HEAD
                     if (jsonObj.has("tipo")) {
                         switch (jsonObj.getInt("tipo")) {
                             case -1:
@@ -157,6 +158,38 @@ public class Home {
                     {
                         //System.out.println("\n[CLIENTE]: Recepção de mensagem");
 
+=======
+                    switch (jsonObj.getInt("tipo")) {
+                        case -1:
+                            System.out.println("\n[CLIENTE]: Mensagem mal formada");
+
+                            break;
+                        case 11:
+                            System.out.println("\n[CLIENTE]: Recepção de salas após o login");
+                            receberSala(jsonObj, false);
+                            break;
+                        case 4:
+                            System.out.println("\n[CLIENTE]: Recepção de sala nova");
+                            receberSala(jsonObj, true);
+                            break;
+                        case 6:
+                            System.out.println("\n[CLIENTE]: Mensagem mal formada");
+                            if (salaCtrl != null) {
+                                salaCtrl.receberClientesConectados(jsonObj.getJSONArray("usuarios"));
+                            }
+
+                            break;
+                        case 9:
+                            System.out.println("\n[CLIENTE]: Recepção de mensagem");
+
+                            if (salaCtrl != null) {
+                                salaCtrl.receberMensagem(jsonObj);
+                            }
+                            break;
+                        default:
+                            mensagemMalFormada(jsonObj, ip, porta);
+                            System.out.println("Datagrama não suportado");
+>>>>>>> 795a3528e29e746793cd8ee8653a7f92702c3179
                     }
 
                     receiveStr = null;

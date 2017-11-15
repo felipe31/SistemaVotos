@@ -112,7 +112,15 @@ public class Sala extends javax.swing.JFrame {
             new String [] {
                 "Nome"
             }
-        ));
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
         jScrollPane1.setViewportView(jTableClientesConectados);
 
         jButtonEnviar.setText("Enviar");
@@ -122,6 +130,7 @@ public class Sala extends javax.swing.JFrame {
             }
         });
 
+        jTextPaneMensagens.setEditable(false);
         jScrollPane2.setViewportView(jTextPaneMensagens);
 
         jTextFieldMensagem.addActionListener(new java.awt.event.ActionListener() {
@@ -140,7 +149,15 @@ public class Sala extends javax.swing.JFrame {
             new String [] {
                 "Opções para voto"
             }
-        ));
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
         jScrollPane3.setViewportView(jTableVotos);
 
         jButtonVotar.setText("Votar");
@@ -221,7 +238,7 @@ public class Sala extends javax.swing.JFrame {
         table.setSelectionModel(selectionModel);
         DefaultTableModel tableModel = (DefaultTableModel) table.getModel();
 
-//        tableModel.setNumRows(0);
+        tableModel.setNumRows(0);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         table.setAutoscrolls(true);
         table.getColumnModel().getColumn(0).setPreferredWidth(table.getWidth());
