@@ -49,12 +49,19 @@ public class Home {
 
     private void receberSala(JSONObject json, boolean novaSala) {
         BancoSalasSingleton bancoSalas = BancoSalasSingleton.getInstance();
-
+        boolean status; 
         int mensagens;
         if (json.has("mensagens")) {
             mensagens = novaSala ? 0 : json.getInt("mensagens");
         } else {
             mensagens = 0;
+        }
+        if (json.has("status")) {
+            status = json.getBoolean("status");
+
+        } else {
+            status = Long.parseLong(json.getString("fim")) > (System.currentTimeMillis() / 1000);
+        
         }
         if (json.has("id") && json.has("criador") && json.has("nome") && json.has("descricao") && json.has("inicio") && json.has("fim") && json.has("status")) {
             Sala sala = new Sala(json.getInt("id"),
@@ -64,7 +71,7 @@ public class Home {
                     json.getString("inicio"),
                     json.getString("fim"),
                     null,
-                    json.getBoolean("status"),
+                    status,
                     mensagens);
             bancoSalas.addSala(sala);
             addSalaVisao(sala);
