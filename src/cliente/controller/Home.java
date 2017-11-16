@@ -50,18 +50,30 @@ public class Home {
     private void receberSala(JSONObject json, boolean novaSala) {
         BancoSalasSingleton bancoSalas = BancoSalasSingleton.getInstance();
 
-        int mensagens = novaSala ? 0 : json.getInt("mensagens");
-        Sala sala = new Sala(json.getInt("id"),
-                json.getString("criador"),
-                json.getString("nome"),
-                json.getString("descricao"),
-                json.getString("inicio"),
-                json.getString("fim"),
-                null,
-                json.getBoolean("status"),
-                mensagens);
-        bancoSalas.addSala(sala);
-        addSalaVisao(sala);
+        int mensagens;
+        if (json.has("mensagens")) {
+            mensagens = novaSala ? 0 : json.getInt("mensagens");
+        } else {
+            mensagens = 0;
+        }
+        if (json.has("id") && json.has("criador") && json.has("nome") && json.has("descricao") && json.has("inicio") && json.has("fim") && json.has("status")) {
+            Sala sala = new Sala(json.getInt("id"),
+                    json.getString("criador"),
+                    json.getString("nome"),
+                    json.getString("descricao"),
+                    json.getString("inicio"),
+                    json.getString("fim"),
+                    null,
+                    json.getBoolean("status"),
+                    mensagens);
+            bancoSalas.addSala(sala);
+            addSalaVisao(sala);
+        }
+        else
+        {
+            System.out.println("MENSAGEM MAL FORMADA: " + json.toString());
+        }
+
     }
 
     private void addSalaVisao(Sala sala) {
@@ -141,7 +153,12 @@ public class Home {
                             case 6:
                                 System.out.println("\n[CLIENTE]: Recepção de clientes conectados");
                                 if (salaCtrl != null) {
-                                    salaCtrl.receberClientesConectados(jsonObj.getJSONArray("usuarios"));
+                                    if (jsonObj.has("usuarios")) {
+                                        salaCtrl.receberClientesConectados(jsonObj.getJSONArray("usuarios"));
+                                    } else {
+                                        //mensagem mal formada
+                                    }
+
                                 }
 
                                 break;
