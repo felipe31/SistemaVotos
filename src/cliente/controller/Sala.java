@@ -93,21 +93,23 @@ public class Sala {
 //	"criador":"nome do cara que escreveu a mensagem",
 //	"mensagem":"string de até 1000 caracteres"
         boolean isClienteAtual = false;
-        if (json.getString("criador").equals(cliente.getNome())) {
-            isClienteAtual = true;
-        }
+        if (json.has("criador") && json.has("mensagem")) {
 
-        String timestamp;
-        try {
-            timestamp = json.getString("timestamp");
-        } catch (Exception e) {
-            timestamp = String.valueOf(System.currentTimeMillis() / 1000);
-        }
+            String timestamp;
+            try {
+                timestamp = json.getString("timestamp");
+            } catch (Exception e) {
+                timestamp = String.valueOf(System.currentTimeMillis() / 1000);
+            }
 
-        addMensagemVisao(json.getString("mensagem"), json.getString("criador"), timestamp, isClienteAtual);
-        try {
-            jTextPaneMensagens.setCaretPosition(jTextPaneMensagens.getDocument().getLength());
-        } catch (Exception e) {
+            addMensagemVisao(json.getString("mensagem"), json.getString("criador"), timestamp, isClienteAtual);
+            try {
+                jTextPaneMensagens.setCaretPosition(jTextPaneMensagens.getDocument().getLength());
+            } catch (Exception e) {
+            }
+
+        } else {
+            System.out.println("MENSAGEM MAL FORMADA " + json.toString());
         }
 
     }
@@ -131,18 +133,28 @@ public class Sala {
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////
     ///////////////////////////// CLIENTES CONECTADOS ////////////////////////////////////////////////////////
+    /**
+     * recebe os usuarios conectados e adiciona se possuem nome na tabela de
+     * clientes
+     *
+     * @param jsonConectados caso contrario, retorna mensagem mal formada
+     * protocolo -1
+     */
     public void receberClientesConectados(JSONArray jsonConectados) {
         JSONObject jsonObj;
         clientesTableModel.getDataVector().removeAllElements();
         for (int i = 0; i < jsonConectados.length(); i++) {
             jsonObj = jsonConectados.getJSONObject(i);
-            clientesTableModel.addRow(new Object[]{jsonObj.getString("nome")});
+            if (jsonObj.has("nome")) {
+                clientesTableModel.addRow(new Object[]{jsonObj.getString("nome")});
+            } else {
+                //mensagem mal formada
+            }
         }
-
     }
 
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ///////////////////////////// TRATAMENTO DE VOTOS ////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////// TRATAMENTO DE VOTOS ////////////////////////////////////////////////////////
     public void receberVotacao(JSONArray jsonArray) {
         JSONObject json;
         votosTableModel.getDataVector().removeAllElements();
@@ -176,14 +188,18 @@ public class Sala {
 //	"adicionar":true/false,
 //	"nome":"nome_do_usuario"
 //}
-        if (json.getBoolean("adicionar")) {
-            clientesTableModel.addRow(new Object[]{json.getString("nome")});
-        } else {
-            for (int i = 0; i < jTableClientesConectados.getRowCount(); i++) {
-                if (clientesTableModel.getValueAt(i, 0).equals(json.getString("nome"))) {
-                    clientesTableModel.removeRow(i);
+        if (json.has("adicionar") && json.has("nome")) {
+            if (json.getBoolean("adicionar")) {
+                clientesTableModel.addRow(new Object[]{json.getString("nome")});
+            } else {
+                for (int i = 0; i < jTableClientesConectados.getRowCount(); i++) {
+                    if (clientesTableModel.getValueAt(i, 0).equals(json.getString("nome"))) {
+                        clientesTableModel.removeRow(i);
+                    }
                 }
             }
+        } else {
+            //mensagem mal formada
         }
 
     }

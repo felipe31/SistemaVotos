@@ -31,9 +31,8 @@ public class Sala {
     private ArrayList<Mensagem> mensagemDaSala = new ArrayList<>();
 
     public ArrayList<Mensagem> getMensagemDaSala() {
-        int id = -2147483647;
+        int id = 0;
         Collections.sort(mensagemDaSala, new ComparadorDeMensagem());
-        ArrayList<Mensagem> list = new ArrayList<>();
         Iterator it = mensagemDaSala.iterator();
         while (it.hasNext()) {
             Mensagem m = (Mensagem) it.next();
