@@ -144,6 +144,9 @@
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="jTextFieldNome">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Sala X"/>
+      </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel2">
       <Properties>
@@ -161,6 +164,7 @@
           <Properties>
             <Property name="columns" type="int" value="20"/>
             <Property name="rows" type="int" value="5"/>
+            <Property name="text" type="java.lang.String" value="Descri&#xe7;&#xe3;o da sala X"/>
           </Properties>
         </Component>
       </SubComponents>
@@ -240,6 +244,9 @@
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="jTextFieldDia">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="12"/>
+      </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel7">
       <Properties>
@@ -247,6 +254,9 @@
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="jTextFieldMes">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="12"/>
+      </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel8">
       <Properties>
@@ -254,8 +264,14 @@
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="jTextFieldAno">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="2017"/>
+      </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="jTextFieldHoras">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="0"/>
+      </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel9">
       <Properties>
@@ -263,6 +279,9 @@
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="jTextFieldMinutos">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="0"/>
+      </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel10">
       <Properties>
@@ -270,6 +289,9 @@
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="jTextFieldSegundos">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="0"/>
+      </Properties>
     </Component>
   </SubComponents>
 </Form>

@@ -101,10 +101,13 @@ public class CriaSala extends javax.swing.JFrame {
 
         jLabel1.setText("Nome da sala");
 
+        jTextFieldNome.setText("Sala X");
+
         jLabel2.setText("Descrição");
 
         jTextAreaDescricao.setColumns(20);
         jTextAreaDescricao.setRows(5);
+        jTextAreaDescricao.setText("Descrição da sala X");
         jScrollPane1.setViewportView(jTextAreaDescricao);
 
         jLabel3.setText("Opções");
@@ -157,13 +160,25 @@ public class CriaSala extends javax.swing.JFrame {
 
         jLabel6.setText("Hora");
 
+        jTextFieldDia.setText("12");
+
         jLabel7.setText("/");
+
+        jTextFieldMes.setText("12");
 
         jLabel8.setText("/");
 
+        jTextFieldAno.setText("2017");
+
+        jTextFieldHoras.setText("0");
+
         jLabel9.setText(":");
 
+        jTextFieldMinutos.setText("0");
+
         jLabel10.setText(":");
+
+        jTextFieldSegundos.setText("0");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);

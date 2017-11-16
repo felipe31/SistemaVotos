@@ -139,7 +139,7 @@ public class Home {
                                 receberSala(jsonObj, true);
                                 break;
                             case 6:
-                                System.out.println("\n[CLIENTE]: Mensagem mal formada");
+                                System.out.println("\n[CLIENTE]: Recepção de clientes conectados");
                                 if (salaCtrl != null) {
                                     salaCtrl.receberClientesConectados(jsonObj.getJSONArray("usuarios"));
                                 }
@@ -166,6 +166,11 @@ public class Home {
                                     JOptionPane.showMessageDialog(null, "Voto realizado com sucesso!\nVocê votou na opção:\n" + jsonObj.getString("opcao"), "Voto realizado", JOptionPane.INFORMATION_MESSAGE);
                                 }
                                 break;
+                            case 16:
+                                if (salaCtrl != null) {
+                                    salaCtrl.receberAlteracaoClienteConectado(jsonObj);
+                                }
+                                break;
                             default:
                                 mensagemMalFormada(jsonObj, ip, porta);
                                 System.out.println("Datagrama não suportado");
@@ -174,7 +179,7 @@ public class Home {
                     }
 
                     receiveStr = null;
-                    Thread.sleep(500);
+                    Thread.sleep(100);
                 }
             } catch (UnknownHostException ex) {
                 Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);

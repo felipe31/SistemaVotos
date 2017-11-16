@@ -28,7 +28,7 @@ public class Json {
         recebimentoThread = new Thread(() -> {
             try{
                 DatagramPacket mensagemPkt = new DatagramPacket(new byte[10000], 10000, InetAddress.getByName(ip), Integer.parseInt(porta));
-                mensagemPkt.setData(new byte[10000]);
+                mensagemPkt.setData(new byte[1000]);
                 socket.receive(mensagemPkt);
                 String receiveStr = new String(mensagemPkt.getData());
                 receiveStr = receiveStr.trim();

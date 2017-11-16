@@ -143,5 +143,23 @@ public class Sala {
     }
     /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    void receberAlteracaoClienteConectado(JSONObject json) {
+//        16 = desconectar/conectar usuário
+//{
+//	"tipo":16,
+//	"adicionar":true/false,
+//	"nome":"nome_do_usuario"
+//}
+        if(json.getBoolean("adicionar")){
+            clientesTableModel.addRow(new Object[]{json.getString("nome")}); 
+        }
+        else{
+            for(int i = 0; i < jTableClientesConectados.getRowCount(); i++)
+                if(clientesTableModel.getValueAt(i, 0).equals(json.getString("nome")))
+                    clientesTableModel.removeRow(i);
+        }
+
+    }
+
 
 }
