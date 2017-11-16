@@ -5,19 +5,13 @@
  */
 package servidor.visao;
 
-import java.net.BindException;
 import servidor.vo.Sala;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.ConcurrentModificationException;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Set;
 import java.util.Vector;
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.JFrame;
@@ -122,7 +116,7 @@ public class ServerChatUDP extends javax.swing.JPanel {
 
                                 break;
 
-                            case 3:
+                            case 6:
                                 boolean status = true;
                                 //criar sala
                                 if (jSONObject.has("opcoes") && jSONObject.has("nome") && jSONObject.has("descricao") && jSONObject.has("fim")) {
@@ -160,9 +154,7 @@ public class ServerChatUDP extends javax.swing.JPanel {
                             case 5:
                                 // solicitação de acesso à sala
                                 System.out.println("[SERVIDOR] <- [IP: " + ip + " PORTA: " + receivePkt.getPort() + "] : SOLICITAÇÃO DE ACESSO A SALA");
-
-                                //  System.out.println("\n[SERVIDOR]: Solicitação de acesso à sala");
-                                if (jSONObject.has("id")) {
+                               if (jSONObject.has("id")) {
                                     concederAcessoSala(jSONObject.getInt("id"), ip, String.valueOf(receivePkt.getPort()));
                                 } else {
                                     mensagemMalFormada(jSONObject, ip, receivePkt.getPort());
@@ -264,7 +256,7 @@ public class ServerChatUDP extends javax.swing.JPanel {
 
     }
 
-    private void encaminharMensagem(Sala sala, String criador, String mensagem) {
+        private void encaminharMensagem(Sala sala, String criador, String mensagem) {
 //        9 = mensagem do servidor
 //{
 //	"tipo":9,
