@@ -14,6 +14,7 @@ import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 import cliente.vo.*;
 import java.net.DatagramSocket;
+import javax.swing.JScrollPane;
 import javax.swing.table.DefaultTableModel;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -29,6 +30,7 @@ public class Sala {
     private final JTextPane jTextPaneMensagens;
     private final JTable jTableClientesConectados;
     private final JTable jTableVotos;
+    private final JScrollPane scrollPane;
     private String[] clientesConectados;
     private String[] votos;
     private Thread recebimentoThread;
@@ -37,7 +39,7 @@ public class Sala {
     private final DefaultTableModel clientesTableModel;
     private final int id_sala;
 
-    public Sala(Cliente cliente, DatagramSocket clienteSocket, JTextPane jTextPaneMensagens, JTable jTableClientesConectados, JTable jTableVotos, int id_sala) {
+    public Sala(Cliente cliente, DatagramSocket clienteSocket, JTextPane jTextPaneMensagens, JTable jTableClientesConectados, JTable jTableVotos, JScrollPane scrollPane, int id_sala) {
         this.jsonOp = new Json();
         this.cliente = cliente;
         this.clientSocket = clienteSocket;
@@ -46,6 +48,7 @@ public class Sala {
         this.jTableVotos = jTableVotos;
         this.votosTableModel = (DefaultTableModel) this.jTableVotos.getModel();
         this.clientesTableModel = (DefaultTableModel) this.jTableClientesConectados.getModel();
+        this.scrollPane = scrollPane;
         this.id_sala = id_sala;
     }
 
@@ -85,7 +88,10 @@ public class Sala {
             isClienteAtual = true;
         }
         addMensagemVisao(json.getString("mensagem"), json.getString("criador"), isClienteAtual);
-    }
+//        if(shouldScroll())
+//             scrollPane.getVerticalScrollBar().setValue(scrollPane.getVerticalScrollBar().getValue() + scrollPane.getVerticalScrollBar().getVisibleAmount());
+        try{jTextPaneMensagens.setCaretPosition(jTextPaneMensagens.getDocument().getLength());}catch(Exception e){}
+    }     
 
     public void enviarMensagemSala(String mensagem) {
 
@@ -111,16 +117,17 @@ public class Sala {
         clientesTableModel.getDataVector().removeAllElements();
         for (int i = 0; i < jsonConectados.length(); i++) {
             jsonObj = jsonConectados.getJSONObject(i);
-            clientesTableModel.addRow(new Object[]{jsonObj.getString("nome")}); 
+            clientesTableModel.addRow(new Object[]{jsonObj.getString("nome")});
         }
 
     }
+
     /////////////////////////////////////////////////////////////////////////////////////////////////////////
     ///////////////////////////// TRATAMENTO DE VOTOS ////////////////////////////////////////////////////////
     public void receberVotacao(JSONArray jsonArray) {
         JSONObject json;
         votosTableModel.getDataVector().removeAllElements();
-        for(int i = 0; i < jsonArray.length(); i++){
+        for (int i = 0; i < jsonArray.length(); i++) {
             json = jsonArray.getJSONObject(i);
             votosTableModel.addRow(json.keySet().toArray());
         }
@@ -134,11 +141,11 @@ public class Sala {
 //	"opcao":"nome_da_opção"
 //}
         JSONObject json = new JSONObject();
-        
+
         json.put("tipo", 15);
         json.put("sala", id_sala);
         json.put("opcao", opcao);
-        
+
         jsonOp.enviarJSON(json, clientSocket, cliente.getIp(), cliente.getPorta());
     }
     /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -150,16 +157,22 @@ public class Sala {
 //	"adicionar":true/false,
 //	"nome":"nome_do_usuario"
 //}
-        if(json.getBoolean("adicionar")){
-            clientesTableModel.addRow(new Object[]{json.getString("nome")}); 
-        }
-        else{
-            for(int i = 0; i < jTableClientesConectados.getRowCount(); i++)
-                if(clientesTableModel.getValueAt(i, 0).equals(json.getString("nome")))
+        if (json.getBoolean("adicionar")) {
+            clientesTableModel.addRow(new Object[]{json.getString("nome")});
+        } else {
+            for (int i = 0; i < jTableClientesConectados.getRowCount(); i++) {
+                if (clientesTableModel.getValueAt(i, 0).equals(json.getString("nome"))) {
                     clientesTableModel.removeRow(i);
+                }
+            }
         }
 
     }
 
+    public boolean shouldScroll() {
+        int minimumValue = scrollPane.getVerticalScrollBar().getValue() + scrollPane.getVerticalScrollBar().getVisibleAmount();
+        int maximumValue = scrollPane.getVerticalScrollBar().getMaximum();
+        return maximumValue == minimumValue;
+    }
 
 }
