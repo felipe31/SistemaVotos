@@ -309,7 +309,7 @@ public class ServerChatUDP extends javax.swing.JPanel {
         JSONObject json = new JSONObject();
         json.put("tipo", 9);
         //json.put("id", );
-        json.put("timestamp", mensagem.getTimestamp());
+        json.put("timestamp", String.valueOf(mensagem.getTimestamp()));
         json.put("criador", mensagem.getCriador());
         json.put("mensagem", mensagem.getMensagem());
         enviarMensagem(json.toString(), ip, receivePkt.getPort());

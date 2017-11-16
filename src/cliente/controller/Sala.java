@@ -38,6 +38,7 @@ public class Sala {
     private final DefaultTableModel votosTableModel;
     private final DefaultTableModel clientesTableModel;
     private final int id_sala;
+    private long ultimoTimestamp = 0;
 
     public Sala(Cliente cliente, DatagramSocket clienteSocket, JTextPane jTextPaneMensagens, JTable jTableClientesConectados, JTable jTableVotos, JScrollPane scrollPane, int id_sala) {
         this.jsonOp = new Json();
@@ -53,20 +54,24 @@ public class Sala {
     }
 
     ///////////////////////////// TRATAMENTO DE MENSAGENS ////////////////////////////////////////////////////////
-    private void addMensagemVisao(String mensagem, String origem, boolean isClienteAtual) {
+    private void addMensagemVisao(String mensagem, String origem, String timestamp, boolean isClienteAtual) {
         SimpleAttributeSet texto = new SimpleAttributeSet();
-
+        String date = new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new java.util.Date(Long.valueOf(timestamp) * 1000));
         StyledDocument doc = jTextPaneMensagens.getStyledDocument();
         try {
-
-            StyleConstants.setForeground(texto, Color.GRAY);
+            if(ultimoTimestamp > Long.valueOf(timestamp))
+                StyleConstants.setForeground(texto, Color.MAGENTA);
+            else{
+                StyleConstants.setForeground(texto, Color.GRAY);
+                ultimoTimestamp = Long.valueOf(timestamp);
+            }
 
             if (isClienteAtual) {
 
                 doc.insertString(doc.getLength(), "> ", texto);
 
             }
-            doc.insertString(doc.getLength(), origem + " diz:\n", texto);
+            doc.insertString(doc.getLength(), date + " - "+origem + " diz:\n", texto);
             StyleConstants.setForeground(texto, Color.BLACK);
             doc.insertString(doc.getLength(), mensagem + "\n\n", texto);
 
@@ -74,6 +79,10 @@ public class Sala {
             System.out.println("Couldn't insert text into text pane.");
             return;
         }
+    }
+
+    private void timestampToDate() {
+
     }
 
     public void receberMensagem(JSONObject json) {
@@ -87,11 +96,13 @@ public class Sala {
         if (json.getString("criador").equals(cliente.getNome())) {
             isClienteAtual = true;
         }
-        addMensagemVisao(json.getString("mensagem"), json.getString("criador"), isClienteAtual);
-//        if(shouldScroll())
-//             scrollPane.getVerticalScrollBar().setValue(scrollPane.getVerticalScrollBar().getValue() + scrollPane.getVerticalScrollBar().getVisibleAmount());
-        try{jTextPaneMensagens.setCaretPosition(jTextPaneMensagens.getDocument().getLength());}catch(Exception e){}
-    }     
+        addMensagemVisao(json.getString("mensagem"), json.getString("criador"), json.getString("timestamp"), isClienteAtual);
+        try {
+            jTextPaneMensagens.setCaretPosition(jTextPaneMensagens.getDocument().getLength());
+        } catch (Exception e) {
+        }
+
+    }
 
     public void enviarMensagemSala(String mensagem) {
 

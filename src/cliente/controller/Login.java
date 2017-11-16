@@ -49,7 +49,7 @@ public class Login {
             JSONObject jsonObj = jsonOp.receberJSON(clientSocket, cliente.getIp(), cliente.getPorta());
             if(jsonObj != null){
                 if(jsonObj.has("tipo"))
-                    if(jsonObj.getInt("tipo") == 1)
+                    if(jsonObj.getInt("tipo") == 1 || jsonObj.getInt("tipo") == -1)
                         return null;
                 return jsonObj;
             }
