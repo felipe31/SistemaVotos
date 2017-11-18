@@ -5,7 +5,6 @@
  */
 package cliente.visao;
 
-import java.awt.Component;
 import java.awt.Toolkit;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;

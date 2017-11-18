@@ -48,6 +48,13 @@ public final class BancoClienteSingleton {
         }
         return null;
     }
+    public Cliente getCliente(String ip, String porta){
+        for(Cliente c : bancoCliente){
+            if(c.getIp().equals(ip) && c.getPorta().equals(porta))
+                return c;
+        }
+        return null;
+    }
     
     public String sha256(String base) {
         try {

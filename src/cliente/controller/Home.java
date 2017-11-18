@@ -47,23 +47,11 @@ public class Home {
         abrirRecepcaoJSON(clienteSocket, cliente.getIp(), cliente.getPorta());
     }
 
-    private void receberSala(JSONObject json, boolean novaSala) {
+    private void receberSalas(JSONObject json) {
         BancoSalasSingleton bancoSalas = BancoSalasSingleton.getInstance();
-        boolean status; 
-        int mensagens;
-        if (json.has("mensagens")) {
-            mensagens = novaSala ? 0 : json.getInt("mensagens");
-        } else {
-            mensagens = 0;
-        }
-        if (json.has("status")) {
-            status = json.getBoolean("status");
+        boolean status;
 
-        } else {
-            status = Long.parseLong(json.getString("fim")) > (System.currentTimeMillis() / 1000);
-        
-        }
-        if (json.has("id") && json.has("criador") && json.has("nome") && json.has("descricao") && json.has("inicio") && json.has("fim") && json.has("status")) {
+        if (json.has("id") && json.has("criador") && json.has("status") && json.has("tamanho") && json.has("nome") && json.has("descricao") && json.has("inicio") && json.has("fim") && json.has("status")) {
             Sala sala = new Sala(json.getInt("id"),
                     json.getString("criador"),
                     json.getString("nome"),
@@ -71,13 +59,11 @@ public class Home {
                     json.getString("inicio"),
                     json.getString("fim"),
                     null,
-                    status,
-                    mensagens);
+                    json.getBoolean("status"),
+                    json.getInt("tamanho"));
             bancoSalas.addSala(sala);
             addSalaVisao(sala);
-        }
-        else
-        {
+        } else {
             System.out.println("MENSAGEM MAL FORMADA: " + json.toString());
         }
 
@@ -116,7 +102,7 @@ public class Home {
         Sala sala = bancoSalas.getSala(Integer.parseInt(id));
         if (sala != null) {
             JSONObject json = new JSONObject();
-            json.put("tipo", 5);
+            json.put("tipo", 7);
             json.put("id", sala.getId());
             jsonOp.enviarJSON(json, clienteSocket, cliente.getIp(), cliente.getPorta());
         }
@@ -124,7 +110,7 @@ public class Home {
     }
 
     public void criaSala(JSONObject jsonSala) {
-        jsonSala.put("tipo", 3);
+        jsonSala.put("tipo", 6);
         jsonOp.enviarJSON(jsonSala, clienteSocket, cliente.getIp(), cliente.getPorta());
     }
 
@@ -149,15 +135,11 @@ public class Home {
                                 System.out.println("\n[CLIENTE]: Mensagem mal formada");
 
                                 break;
-                            case 11:
-                                System.out.println("\n[CLIENTE]: Recepção de salas após o login");
-                                receberSala(jsonObj, false);
-                                break;
                             case 4:
-                                System.out.println("\n[CLIENTE]: Recepção de sala nova");
-                                receberSala(jsonObj, true);
+                                System.out.println("\n[CLIENTE]: Recepção de salas após o login");
+                                receberSalas(jsonObj);
                                 break;
-                            case 6:
+                            case 8:
                                 System.out.println("\n[CLIENTE]: Recepção de clientes conectados");
                                 if (salaCtrl != null) {
                                     if (jsonObj.has("usuarios")) {
@@ -165,18 +147,22 @@ public class Home {
                                     } else {
                                         //mensagem mal formada
                                     }
-
                                 }
-
                                 break;
-                            case 7:
+                            case 9:
                                 if (salaCtrl != null) {
                                     System.out.println("\n[CLIENTE]: Recepção de status da votação");
                                     salaCtrl.receberVotacao(jsonObj.getJSONArray("resultados"));
                                 }
                                 break;
+                            case 10:
+                                if (salaCtrl != null) {
+                                    System.out.println("\n[CLIENTE]: Alteração de cliente conectado");
+                                    salaCtrl.receberAlteracaoClienteConectado(jsonObj);
+                                }
+                                break;
 
-                            case 9:
+                            case 12:
                                 System.out.println("\n[CLIENTE]: Recepção de mensagem");
 
                                 if (salaCtrl != null) {
@@ -190,11 +176,7 @@ public class Home {
                                     JOptionPane.showMessageDialog(null, "Voto realizado com sucesso!\nVocê votou na opção:\n" + jsonObj.getString("opcao"), "Voto realizado", JOptionPane.INFORMATION_MESSAGE);
                                 }
                                 break;
-                            case 16:
-                                if (salaCtrl != null) {
-                                    salaCtrl.receberAlteracaoClienteConectado(jsonObj);
-                                }
-                                break;
+
                             default:
                                 mensagemMalFormada(jsonObj, ip, porta);
                                 System.out.println("Datagrama não suportado");

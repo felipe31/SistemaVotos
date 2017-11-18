@@ -8,8 +8,6 @@ package cliente.controller;
 import cliente.vo.Cliente;
 import java.net.DatagramSocket;
 import java.net.SocketException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.json.JSONObject;
 
 /**
@@ -25,7 +23,7 @@ public class Login {
         return clientSocket;
     }
     private Json jsonOp = new Json();
-    
+
     public static void main(String[] args) {
         new Login();
     }
@@ -43,23 +41,26 @@ public class Login {
         try {
             clientSocket = new DatagramSocket();
         } catch (SocketException ex) {
-            Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
         }
-        if(jsonOp.enviarJSON(obj, clientSocket, cliente.getIp(), cliente.getPorta())){
-            JSONObject jsonObj = jsonOp.receberJSON(clientSocket, cliente.getIp(), cliente.getPorta());
-            if(jsonObj != null){
-                if(jsonObj.has("tipo"))
-                    if(jsonObj.getInt("tipo") == 1 || jsonObj.getInt("tipo") == -1)
+        jsonOp.iniciaThreadRecebimentoJSON(clientSocket, cliente.getIp(), cliente.getPorta());
+        if (jsonOp.enviarJSON(obj, clientSocket, cliente.getIp(), cliente.getPorta())) {
+            JSONObject jsonObj = jsonOp.receberJSON();
+            if (jsonObj != null) {
+                if (jsonObj.has("tipo")) {
+                    if (jsonObj.getInt("tipo") == 1 || jsonObj.getInt("tipo") == -1) {
                         return null;
-                return jsonObj;
+                    }
+                    return jsonObj;
+                }
             }
         }
         return null;
     }
-    
+
     public boolean Deslogar() {
         JSONObject json = new JSONObject();
-        json.put("tipo", 10);
+        json.put("tipo", 3);
         return jsonOp.enviarJSON(json, clientSocket, cliente.getIp(), cliente.getPorta());
     }
 

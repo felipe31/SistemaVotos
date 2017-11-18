@@ -8,7 +8,6 @@ package cliente.controller;
 import java.awt.Color;
 import javax.swing.JTable;
 import javax.swing.JTextPane;
-import javax.swing.text.BadLocationException;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
@@ -16,6 +15,7 @@ import cliente.vo.*;
 import java.net.DatagramSocket;
 import javax.swing.JScrollPane;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.text.BadLocationException;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -81,9 +81,6 @@ public class Sala {
         }
     }
 
-    private void timestampToDate() {
-
-    }
 
     public void receberMensagem(JSONObject json) {
 //    9 = mensagem do servidor
@@ -101,7 +98,7 @@ public class Sala {
             } catch (Exception e) {
                 timestamp = String.valueOf(System.currentTimeMillis() / 1000);
             }
-
+            if(cliente.getNome().equals(json.getString("criador"))) isClienteAtual = true;
             addMensagemVisao(json.getString("mensagem"), json.getString("criador"), timestamp, isClienteAtual);
             try {
                 jTextPaneMensagens.setCaretPosition(jTextPaneMensagens.getDocument().getLength());
@@ -124,7 +121,7 @@ public class Sala {
 //}
         JSONObject json = new JSONObject();
 
-        json.put("tipo", 8);
+        json.put("tipo", 14);
         json.put("criador", cliente.getNome());
         json.put("mensagem", mensagem);
         jsonOp.enviarJSON(json, clientSocket, cliente.getIp(), cliente.getPorta());
@@ -204,10 +201,10 @@ public class Sala {
 
     }
 
-    public boolean shouldScroll() {
-        int minimumValue = scrollPane.getVerticalScrollBar().getValue() + scrollPane.getVerticalScrollBar().getVisibleAmount();
-        int maximumValue = scrollPane.getVerticalScrollBar().getMaximum();
-        return maximumValue == minimumValue;
+    public void sairSala() {
+        JSONObject json = new JSONObject();
+        json.put("tipo", 11);
+        jsonOp.enviarJSON(json, clientSocket, cliente.getIp(), cliente.getPorta());
     }
 
 }

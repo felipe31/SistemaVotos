@@ -51,6 +51,7 @@ public class Sala extends javax.swing.JFrame {
 
         this.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
+                salaCtrl.sairSala();
                 homeVisao.setVisible(true);
             }
         });
@@ -212,7 +213,7 @@ public class Sala extends javax.swing.JFrame {
         if (!jTextFieldMensagem.getText().equals("")) {
             salaCtrl.enviarMensagemSala(jTextFieldMensagem.getText());
             jTextFieldMensagem.setText("");
-        } else{
+        } else {
             JOptionPane.showMessageDialog(null, "Não há nada para enviar!", "Mensagem vazia!", JOptionPane.WARNING_MESSAGE);
         }
 
@@ -225,7 +226,7 @@ public class Sala extends javax.swing.JFrame {
     private void jButtonVotarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonVotarActionPerformed
         String opcao = String.valueOf(votosTable.getValueAt(jTableVotos.getSelectedRow(), 0));
         if (opcao != null) {
-            if(JOptionPane.showConfirmDialog(this, "O seu voto será para a opção:\n" + opcao + "\n\nConfirmar voto?", "Confirmação de voto", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION){
+            if (JOptionPane.showConfirmDialog(this, "O seu voto será para a opção:\n" + opcao + "\n\nConfirmar voto?", "Confirmação de voto", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
                 salaCtrl.enviarVoto(opcao);
                 homeVisao.getHomeCtrl().iniciaThreadVoto();
             }
