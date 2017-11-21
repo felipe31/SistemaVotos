@@ -129,7 +129,6 @@ public class ServerChatUDP extends javax.swing.JPanel {
                                     ArrayList<Voto> opcoes = new ArrayList<>();
 
                                     JSONArray jArray = jSONObject.getJSONArray("opcoes");
-//                                    System.out.println(jArray);
 
                                     Iterator it = jArray.iterator();
                                     while (it.hasNext()) {
@@ -143,10 +142,16 @@ public class ServerChatUDP extends javax.swing.JPanel {
                                         }
                                     }
                                     if (status = true) {
+                                        String criador_ra = null;
+                                        try {
+                                            criador_ra = getConectado(ip, String.valueOf(receivePkt.getPort()))[0];
 
-                                        String criador_ra = getConectado(ip, String.valueOf(receivePkt.getPort()))[0];
+                                        } catch (Exception e) {
+                                            System.out.println("O cliente que tentou criar sala não está conectado!");
+                                        }
                                         enviaSalaBroadcast(bancoSalasSingleton.criarSala(criador_ra, jSONObject.getString("nome"), jSONObject.getString("descricao"), jSONObject.getString("fim"), opcoes));
                                         status = true;
+
                                     } else {
                                         mensagemMalFormada(jSONObject, ip, receivePkt.getPort());
                                     }
@@ -233,7 +238,7 @@ public class ServerChatUDP extends javax.swing.JPanel {
         Sala sala = salasBanco.getSala(idSala);
         Cliente cliente = clientesBanco.getCliente(getConectado(ip, porta)[0]);
 
-        enviarClienteASerAlteradoSala(sala, cliente.getNome(), true);
+        enviarClienteASerAlteradoSala(sala, cliente.getNome(), cliente.getRa(), true);
 
         // Cadastra usuário na sala
         sala.addClienteConectado(cliente);
@@ -329,8 +334,14 @@ public class ServerChatUDP extends javax.swing.JPanel {
     private void removeConexao(String ip, int porta) {
         try {
             int idx = 0;
-            for (Object v : table.getDataVector()) {
-                if (((Vector) v).get(1).equals(ip) && ((Vector) v).get(2).equals(porta)) {
+            String ipNow, portaNow;
+            for (int i = 0; i < table.getRowCount(); i++) {
+                ipNow = String.valueOf(table.getValueAt(i, 1));
+                portaNow = String.valueOf(table.getValueAt(i, 2));
+                
+                System.out.println(ip + "/" + porta);
+                System.out.println( ipNow + "/" + portaNow);
+                if (ipNow.equals(ip) && portaNow.equals(String.valueOf(porta))) {
                     table.removeRow(idx);
                     clientesConectados.remove(idx);
                     return;
@@ -627,10 +638,12 @@ public class ServerChatUDP extends javax.swing.JPanel {
         JSONArray jsonArrayConectados = new JSONArray();
         JSONObject jsonConectado;
         json.put("tipo", 8);
+        json.put("tamanho", sala.getQtdMensagens());
 
         for (Cliente c : sala.getClientesConectados()) {
             jsonConectado = new JSONObject();
             jsonConectado.put("nome", c.getNome());
+            jsonConectado.put("ra", c.getRa());
             jsonArrayConectados.put(jsonConectado);
             ipPortaConectado = getConectado(c.getRa());
         }
@@ -717,7 +730,7 @@ public class ServerChatUDP extends javax.swing.JPanel {
         return sala.addVoto(opcao, cliente);
     }
 
-    private void enviarClienteASerAlteradoSala(Sala sala, String nome, boolean adicionar) {
+    private void enviarClienteASerAlteradoSala(Sala sala, String nome, String ra, boolean adicionar) {
 //        16 = desconectar/conectar usuário
 //{
 //	"tipo":16,
@@ -730,6 +743,7 @@ public class ServerChatUDP extends javax.swing.JPanel {
         json.put("tipo", 10);
         json.put("adicionar", adicionar);
         json.put("nome", nome);
+        json.put("ra", ra);
 
         sala.getClientesConectados().forEach((c) -> {
             enviarMensagem(json.toString(), c.getIp(), Integer.parseInt(c.getPorta()));
@@ -742,8 +756,8 @@ public class ServerChatUDP extends javax.swing.JPanel {
         if (cliente != null) {
             if (cliente.getSalaAtual() > -1) {
                 sala = BancoSalasSingleton.getInstance().getSala(cliente.getSalaAtual());
-                enviarClienteASerAlteradoSala(sala, 
-                        cliente.getNome(), false);
+                enviarClienteASerAlteradoSala(sala,
+                        cliente.getNome(), cliente.getRa(), false);
                 cliente.setSalaAtual(-1);
                 sala.removeClienteConectado(cliente);
             }

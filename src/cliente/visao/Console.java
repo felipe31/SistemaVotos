@@ -165,7 +165,7 @@ public class Console extends javax.swing.JFrame {
         try {
             clientSocket = new DatagramSocket();
             isLogged = true;
-            String mensagemStr = new String("{\"tipo\":0, \"ra\":\"123\", \"senha\":\"a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3\"");
+            String mensagemStr = new String("{\"tipo\":0, \"ra\":\"123\", \"senha\":\"a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3\"}");
             DatagramPacket enviar = new DatagramPacket(mensagemStr.getBytes(), mensagemStr.getBytes().length,
                     InetAddress.getByName(jTextFieldIp.getText()), Integer.parseInt(jTextFieldPorta.getText()));
             clientSocket.send(enviar);

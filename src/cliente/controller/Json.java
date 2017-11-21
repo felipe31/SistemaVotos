@@ -28,7 +28,7 @@ public class Json {
                     String receiveStr = new String(mensagemPkt.getData());
                     receiveStr = receiveStr.trim();
                     JSONObject jsonObj = new JSONObject(receiveStr);
-                    System.out.println("\n[CLIENTE]----: Mensagem recebida: " + jsonObj.toString());
+                    System.out.println("\n[CLIENTE]: Mensagem recebida: " + jsonObj.toString());
                     System.out.println("\n[CLIENTE]: Mensagem recebida de " + ip + ":" + porta);
                     jsonThread = jsonObj;
             } catch (Exception ex) {
