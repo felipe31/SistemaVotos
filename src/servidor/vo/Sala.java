@@ -29,20 +29,37 @@ public class Sala {
     private int qtdMensagens;
     private HashSet<Cliente> clientesConectados;
     private ArrayList<Mensagem> mensagemDaSala = new ArrayList<>();
+    private int nMensagens = mensagemDaSala.size();
 
-    public ArrayList<Mensagem> getMensagemDaSala() {
-        int id = 0;
+    public int getnMensagens() {
+        return nMensagens;
+    }
+
+    public void setnMensagens(int nMensagens) {
+        this.nMensagens = nMensagens;
+    }
+
+    
+    public Mensagem getMensagemSala(Long timestamp){
         Collections.sort(mensagemDaSala, new ComparadorDeMensagem());
         Iterator it = mensagemDaSala.iterator();
         while (it.hasNext()) {
             Mensagem m = (Mensagem) it.next();
-            m.setId(id);
-            id++;
+            if(0==m.getTimestamp().compareTo(timestamp)){
+                return m;
+            }
         }
+        return null;
+    }
+    
+    
+    public ArrayList<Mensagem> getMensagensDaSala() {
+        Collections.sort(mensagemDaSala, new ComparadorDeMensagem());
+
         return mensagemDaSala;
     }
 
-    public void setMensagemDaSala(ArrayList<Mensagem> mensagemDaSala) {
+    public void setMensagensDaSala(ArrayList<Mensagem> mensagemDaSala) {
         this.mensagemDaSala = mensagemDaSala;
     }
 

@@ -20,7 +20,7 @@ public final class BancoClienteSingleton {
         try{
             
             String senha = sha256("123");
-            addCliente(new Cliente("Cauê Felchar", "1687638", senha, "Ciência da Computação", "8", "", ""));
+            addCliente(new Cliente("Caue Felchar", "1687638", senha, "Ciência da Computação", "8", "", ""));
             addCliente(new Cliente("Vithor Tozetto Ferreira", "1687824", senha, "Ciência da computação", "7", "", ""));
             addCliente(new Cliente("Felipe Soares", "1600001", senha, "Ciência da Computação", "8", "", ""));
             addCliente(new Cliente("Víctor Muniz dos Santos", "1687816", senha, "Ciência da Computação", "8", "", ""));

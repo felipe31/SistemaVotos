@@ -75,7 +75,7 @@ public class ServerChatUDP extends javax.swing.JPanel {
             try {
 
                 while (true) {
-                    buffer = new byte[1024];
+                    buffer = new byte[10240];
                     receivePkt = new DatagramPacket(buffer, buffer.length);
                     serverDatagram.receive(receivePkt);
 
@@ -174,9 +174,14 @@ public class ServerChatUDP extends javax.swing.JPanel {
                                 break;
                             case 14:
                                 //enviar mensagem para a sala que vc esta
-                                encaminharMensagem(BancoSalasSingleton.getInstance().getSala(BancoClienteSingleton.getInstance().getCliente(
-                                        getConectado(ip, String.valueOf(receivePkt.getPort()))[0]).getSalaAtual()),
-                                        jSONObject.getString("criador"), jSONObject.getString("mensagem"));
+                                try {
+                                    encaminharMensagem(BancoSalasSingleton.getInstance().getSala(BancoClienteSingleton.getInstance().getCliente(
+                                            getConectado(ip, String.valueOf(receivePkt.getPort()))[0]).getSalaAtual()),
+                                            jSONObject.getString("criador"), jSONObject.getString("mensagem"));
+                                } catch (Exception e) {
+                                    System.out.println("[IP: " + ip + " PORTA: " + receivePkt.getPort() + "] -> [SERVIDOR] : MENSAGEM INCORRETA");
+                                    mensagemMalFormada(jSONObject, ip, receivePkt.getPort());
+                                }
                                 break;
                             case 15:
                                 System.out.println("[IP: " + ip + " PORTA: " + receivePkt.getPort() + "] -> [SERVIDOR] : VOTO");
@@ -254,7 +259,7 @@ public class ServerChatUDP extends javax.swing.JPanel {
     private void encaminharMensagemHistorico(String ip, String porta, Mensagem mensagem) {
         JSONObject json = new JSONObject();
         json.put("tipo", 12);
-        //json.put("id", );
+        json.put("id", mensagem.getId());
         json.put("timestamp", String.valueOf(mensagem.getTimestamp()));
         json.put("criador", mensagem.getCriador());
         json.put("mensagem", mensagem.getMensagem());
@@ -274,18 +279,21 @@ public class ServerChatUDP extends javax.swing.JPanel {
         String aux = String.valueOf(System.currentTimeMillis() / 1000);
         JSONObject json = new JSONObject();
         json.put("tipo", 12);
-        //json.put("id", );
         json.put("timestamp", aux);
         json.put("criador", criador);
         json.put("mensagem", mensagem);
         String[] conectado;
+        sala.setnMensagens(sala.getnMensagens() + 1);
 
         Mensagem mensagem1 = new Mensagem();
         mensagem1.setCriador(criador);
         mensagem1.setMensagem(mensagem);
         mensagem1.setTimestamp(Long.valueOf(aux));
+        mensagem1.setId(sala.getnMensagens());
 
-        sala.getMensagemDaSala().add(mensagem1);
+        sala.getMensagensDaSala().add(mensagem1);
+
+        json.put("id", mensagem1.getId());
 
         for (Cliente c : sala.getClientesConectados()) {
             conectado = getConectado(c.getRa());
@@ -338,9 +346,9 @@ public class ServerChatUDP extends javax.swing.JPanel {
             for (int i = 0; i < table.getRowCount(); i++) {
                 ipNow = String.valueOf(table.getValueAt(i, 1));
                 portaNow = String.valueOf(table.getValueAt(i, 2));
-                
+
                 System.out.println(ip + "/" + porta);
-                System.out.println( ipNow + "/" + portaNow);
+                System.out.println(ipNow + "/" + portaNow);
                 if (ipNow.equals(ip) && portaNow.equals(String.valueOf(porta))) {
                     table.removeRow(idx);
                     clientesConectados.remove(idx);
@@ -653,7 +661,7 @@ public class ServerChatUDP extends javax.swing.JPanel {
 
     private void enviarHistoricoSala(Sala sala, String ip, String porta) {
 
-        Iterator it = sala.getMensagemDaSala().iterator();
+        Iterator it = sala.getMensagensDaSala().iterator();
         while (it.hasNext()) {
             Mensagem m = (Mensagem) it.next();
 //            System.out.println(m.getMensagem());
