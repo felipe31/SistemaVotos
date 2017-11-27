@@ -197,7 +197,6 @@ public class Sala {
         String votou = cliente.jaVotouNaSala(id);
         if (votou != null) {
             if (votou.equals(descricaoVoto)) {
-
                 return true;
             } else {
                 for (Voto v : opcoes) {
@@ -234,5 +233,12 @@ public class Sala {
 
     public int getQtdVotos() {
         return qtdVotos;
+    }
+    public String getStringVotos(){
+        String s = new String();
+        for(Voto v: opcoes){
+            s = s.concat(v.getDescricao() + ": "+v.getContador()+" - ");
+        }
+        return s;
     }
 }
