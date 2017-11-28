@@ -12,6 +12,8 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -42,6 +44,7 @@ public class ServerChatUDP extends javax.swing.JPanel {
     private BancoClienteSingleton bancoCliente = BancoClienteSingleton.getInstance();
     private BancoSalasSingleton bancoSala = BancoSalasSingleton.getInstance();
     private boolean isConectado = false;
+    private long contador; //240s
 
     private ServerChatUDP() {
         initComponents();
@@ -74,8 +77,8 @@ public class ServerChatUDP extends javax.swing.JPanel {
 //            serverTextArea.setText("[SERVIDOR]: Servidor iniciado na porta " + serverDatagram.getLocalPort() + "\n");
 
             try {
-
                 while (true) {
+
                     buffer = new byte[10240];
                     receivePkt = new DatagramPacket(buffer, buffer.length);
                     serverDatagram.receive(receivePkt);
@@ -198,6 +201,9 @@ public class ServerChatUDP extends javax.swing.JPanel {
                                     System.out.println("O cliente que votar não está conectado!");
                                 }
                                 break;
+                            case 16:
+                                System.out.println("pingando");
+                                break;
                             default:
                                 mensagemMalFormada(jSONObject, ip, receivePkt.getPort());
                                 System.out.println("Datagrama não suportado");
@@ -214,13 +220,40 @@ public class ServerChatUDP extends javax.swing.JPanel {
             }
         });
 
+        Thread threadPing = new Thread(() -> {
+          
+            while (true) {
+                try {
+                    Iterator it = clientesConectados.iterator();
+                    Thread.sleep(500);
+                    while (it.hasNext()) {
+                        
+                        JSONObject ping = new JSONObject();
+                        ping.put("tipo", 16);
+
+                        for (String[] str : clientesConectados) {
+                            enviarMensagem(ping.toString(), str[1], Integer.parseInt(str[2]));
+
+                        }
+
+                    }
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(ServerChatUDP.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
+            }
+
+        });
+        threadPing.start();
+
         thread.start();
+
         return thread;
     }
 
-    // PROCESSAMENTO DOS DATAGRAMAS RECEBIDOS
-    //OOOOOLD AINDA NAO ALTERADO DO CHAT
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// PROCESSAMENTO DOS DATAGRAMAS RECEBIDOS
+//OOOOOLD AINDA NAO ALTERADO DO CHAT
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     private boolean isBroadcast(String ip, String porta) {
         if (ip.equals("999.999.999.999") && porta.equals("99999")) {
             return true;

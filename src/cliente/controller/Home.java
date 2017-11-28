@@ -175,6 +175,11 @@ public class Home {
                                     System.out.println("\n[CLIENTE]: Confirmação de voto");
                                     JOptionPane.showMessageDialog(null, "Voto realizado com sucesso!\nVocê votou na opção:\n" + jsonObj.getString("opcao"), "Voto realizado", JOptionPane.INFORMATION_MESSAGE);
                                 }
+                            case 16:
+                                JSONObject json = new JSONObject();
+                                json.put("tipo", 16);
+                               // json.put("id", sala.getId());
+                                jsonOp.enviarJSON(json, clienteSocket, cliente.getIp(), cliente.getPorta());
                                 break;
 
                             default:
