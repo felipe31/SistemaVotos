@@ -45,6 +45,7 @@ public class Home {
         this.qtdSalas = qtdSalas;
         this.salasTabela = salasTabela;
         abrirRecepcaoJSON(clienteSocket, cliente.getIp(), cliente.getPorta());
+        enviaPing();
     }
 
     private void receberSalas(JSONObject json) {
@@ -144,6 +145,7 @@ public class Home {
                                 if (salaCtrl != null) {
                                     if (jsonObj.has("usuarios")) {
                                         salaCtrl.receberClientesConectados(jsonObj.getJSONArray("usuarios"));
+                                        enviaPing();
                                     } else {
                                         //mensagem mal formada
                                     }
@@ -166,6 +168,7 @@ public class Home {
                                 System.out.println("\n[CLIENTE]: Recepção de mensagem");
 
                                 if (salaCtrl != null) {
+                                    enviaPing();
                                     salaCtrl.receberMensagem(jsonObj);
                                 }
                                 break;
@@ -176,10 +179,7 @@ public class Home {
                                     JOptionPane.showMessageDialog(null, "Voto realizado com sucesso!\nVocê votou na opção:\n" + jsonObj.getString("opcao"), "Voto realizado", JOptionPane.INFORMATION_MESSAGE);
                                 }
                             case 16:
-                                JSONObject json = new JSONObject();
-                                json.put("tipo", 16);
-                               // json.put("id", sala.getId());
-                                jsonOp.enviarJSON(json, clienteSocket, cliente.getIp(), cliente.getPorta());
+                                enviaPing();
                                 break;
 
                             default:
@@ -190,7 +190,7 @@ public class Home {
                     }
 
                     receiveStr = null;
-                    Thread.sleep(100);
+                    Thread.sleep(10);
                 }
             } catch (UnknownHostException ex) {
                 Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
@@ -238,13 +238,25 @@ public class Home {
                     JOptionPane.showMessageDialog(null, "Não foi possível confirmar o voto!\nTente novamente.", "Erro na confirmação do voto", JOptionPane.ERROR_MESSAGE);
                 } else {
                     votoRetornou = false;
-
                 }
             } catch (InterruptedException ex) {
                 Logger.getLogger(cliente.visao.Home.class
                         .getName()).log(Level.SEVERE, null, ex);
             }
         }).start();
+    }
+
+    public void enviaPing() {
+        int idSala = -1;
+        JSONObject json = new JSONObject();
+        json.put("tipo", 16);
+
+        if (salaCtrl != null) {
+            idSala = salaCtrl.getId_sala();
+        }
+        json.put("sala", idSala);
+        jsonOp.enviarJSON(json, clienteSocket, cliente.getIp(), cliente.getPorta());
+        jsonOp.enviarJSON(json, clienteSocket, cliente.getIp(), cliente.getPorta());
     }
 
 }

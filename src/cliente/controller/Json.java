@@ -43,7 +43,7 @@ public class Json {
     protected JSONObject receberJSON() {
 
         try {
-            Thread.sleep(100);
+            Thread.sleep(200);
         } catch (InterruptedException e) {
             System.out.println("Problema na Thread de login");
 

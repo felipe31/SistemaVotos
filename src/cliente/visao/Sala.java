@@ -12,6 +12,7 @@ import java.awt.event.WindowEvent;
 import java.net.DatagramSocket;
 import java.util.ArrayList;
 import javax.swing.DefaultListSelectionModel;
+import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
@@ -68,10 +69,11 @@ public class Sala extends javax.swing.JFrame {
         jTableVotos.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
-                if (jTableVotos.getSelectedRow() > -1) {
+                if (jTableVotos.getSelectedRow() > -1 && jTableVotos.getSelectedRow() < jTableVotos.getRowCount()) {
                     jButtonVotar.setEnabled(true);
 //                    System.out.println(jTableVotos.getValueAt(jTableVotos.getSelectedRow(), 0).toString());
                 }
+                else jButtonVotar.setEnabled(false);
 
             }
 
@@ -224,6 +226,7 @@ public class Sala extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextFieldMensagemActionPerformed
 
     private void jButtonVotarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonVotarActionPerformed
+        homeVisao.getHomeCtrl().enviaPing();
         String opcao = String.valueOf(votosTable.getValueAt(jTableVotos.getSelectedRow(), 0));
         if (opcao != null) {
             if (JOptionPane.showConfirmDialog(this, "O seu voto será para a opção:\n" + opcao + "\n\nConfirmar voto?", "Confirmação de voto", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
@@ -232,6 +235,10 @@ public class Sala extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_jButtonVotarActionPerformed
+
+    public JButton getjButtonVotar() {
+        return jButtonVotar;
+    }
 
     private DefaultTableModel iniciaJTable(JTable table) {
 

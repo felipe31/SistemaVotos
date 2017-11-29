@@ -207,4 +207,9 @@ public class Sala {
         jsonOp.enviarJSON(json, clientSocket, cliente.getIp(), cliente.getPorta());
     }
 
+    public int getId_sala() {
+        return id_sala;
+    }
+
+    
 }
