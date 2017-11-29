@@ -11,20 +11,20 @@ import java.awt.Toolkit;
 import java.security.MessageDigest;
 import org.json.JSONObject;
 
-
 /**
  *
  * @author Samsung
  */
 public class Login extends javax.swing.JFrame {
+
     private cliente.controller.Login loginCtrl;
 
     /**
      * Creates new form Login
      */
     public Login() {
-        initComponents(); 
-        setLocation(Toolkit.getDefaultToolkit().getScreenSize().width/2-this.getSize().width/2, Toolkit.getDefaultToolkit().getScreenSize().height/2-this.getSize().height/2);
+        initComponents();
+        setLocation(Toolkit.getDefaultToolkit().getScreenSize().width / 2 - this.getSize().width / 2, Toolkit.getDefaultToolkit().getScreenSize().height / 2 - this.getSize().height / 2);
         loginCtrl = new cliente.controller.Login();
     }
 
@@ -143,52 +143,46 @@ public class Login extends javax.swing.JFrame {
 
     private void jButtonLogarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonLogarActionPerformed
         // TODO add your handling code here:
-        if(jTextFieldLogin.getText().toString().isEmpty())
-        {
-                        JOptionPane.showMessageDialog(this, "Digite seu login","Digite seu login", JOptionPane.ERROR_MESSAGE);
+        if (jTextFieldLogin.getText().toString().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Digite seu login", "Digite seu login", JOptionPane.ERROR_MESSAGE);
         }
-        if(jPasswordFieldSenha.getText().toString().isEmpty())
-        {
-            JOptionPane.showMessageDialog(this, "Digite sua senha","Digite sua senha", JOptionPane.ERROR_MESSAGE);
+        if (jPasswordFieldSenha.getText().toString().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Digite sua senha", "Digite sua senha", JOptionPane.ERROR_MESSAGE);
         }
-        if(!jTextFieldLogin.getText().toString().isEmpty() && !String.valueOf(jPasswordFieldSenha.getPassword()).isEmpty())
-        {
+        if (!jTextFieldLogin.getText().toString().isEmpty() && !String.valueOf(jPasswordFieldSenha.getPassword()).isEmpty()) {
             Cliente cliente = new Cliente(null, jTextFieldLogin.getText(), jTextFieldIp.getText(), jTextFieldPorta.getText());
             System.out.println(cliente.getPorta());
-                // Hash na senha
-                String hash = sha256(String.valueOf(jPasswordFieldSenha.getPassword()));
-                
-                // Solicita Login e retorna o datagrama 2
-                JSONObject jsonObj = loginCtrl.Logar(cliente, hash);
+            // Hash na senha
+            String hash = sha256(String.valueOf(jPasswordFieldSenha.getPassword()));
 
-                // Confere login
-                if(jsonObj != null){
-                    if(jsonObj.has("nome") && jsonObj.has("tamanho"))
-                    {
-                         cliente.setNome(jsonObj.getString("nome"));
-                    
+            // Solicita Login e retorna o datagrama 2
+            JSONObject jsonObj = loginCtrl.Logar(cliente, hash);
+
+            // Confere login
+            if (jsonObj != null) {
+                if (jsonObj.has("nome") && jsonObj.has("tamanho")) {
+                    cliente.setNome(jsonObj.getString("nome"));
+
                     new Home(cliente, loginCtrl, jsonObj.getInt("tamanho")).setVisible(true);
                     this.dispose();
                     JOptionPane.showMessageDialog(this, "Sucesso no Login",
                             "Login realizado com sucesso!", JOptionPane.INFORMATION_MESSAGE);
-                    }
-                   
                 }
-                else
-                    JOptionPane.showMessageDialog(this, "Erro ao realizar o login!\nTente novamente.",
-                            "Erro!", JOptionPane.ERROR_MESSAGE);
-                    
-            
+
+            } else {
+                JOptionPane.showMessageDialog(this, "Erro ao realizar o login!\nTente novamente.",
+                        "Erro!", JOptionPane.ERROR_MESSAGE);
+            }
+
 //                JOptionPane.showMessageDialog(this, "Erro ao criptografar a senha!\nTente novamente.","Erro!", JOptionPane.ERROR_MESSAGE);
         }
-        if(jTextFieldLogin.getText().equals("adm") && String.valueOf(jPasswordFieldSenha.getPassword()).equals("adm"))
-        {
+        if (jTextFieldLogin.getText().equals("adm") && String.valueOf(jPasswordFieldSenha.getPassword()).equals("adm")) {
 //            Login home = new Login();
 //            home.setVisible(true);
 //            System.out.println(jTextFieldLogin.getText().toString());
 //            this.dispose();
             System.out.println("Adm login");
-            JOptionPane.showMessageDialog(this, "Adm Login","Adm Login", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Adm Login", "Adm Login", JOptionPane.INFORMATION_MESSAGE);
         }
     }//GEN-LAST:event_jButtonLogarActionPerformed
 
@@ -208,7 +202,7 @@ public class Login extends javax.swing.JFrame {
         jButtonLogarActionPerformed(evt);
     }//GEN-LAST:event_jTextFieldPortaActionPerformed
 
-     public static String sha256(String base) {
+    public static String sha256(String base) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] hash = digest.digest(base.getBytes("UTF-8"));
@@ -229,7 +223,7 @@ public class Login extends javax.swing.JFrame {
             return base;
         }
     }
-    
+
     /**
      * @param args the command line arguments
      */

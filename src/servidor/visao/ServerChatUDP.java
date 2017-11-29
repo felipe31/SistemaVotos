@@ -204,7 +204,6 @@ public class ServerChatUDP extends javax.swing.JPanel {
                                         enviarMensagem(jSONObject.toString(), ip, receivePkt.getPort());
                                         atualizarClientesVotos(BancoSalasSingleton.getInstance().getSala(BancoClienteSingleton.getInstance().getCliente(ip, String.valueOf(receivePkt.getPort())).getSalaAtual()));
 
-
                                     }
 
                                 } catch (Exception e) {
@@ -212,7 +211,7 @@ public class ServerChatUDP extends javax.swing.JPanel {
                                 }
                                 break;
                             case 16:
-                                System.out.println("pingando");
+                                System.out.println("[SERVIDOR] <- [IP: " + ip + " PORTA: " + receivePkt.getPort() + "] : PING RECEBIDO");
                                 adicionaClienteComPing(ip, receivePkt.getPort());
                                 break;
                             default:
@@ -240,23 +239,11 @@ public class ServerChatUDP extends javax.swing.JPanel {
             int idSala;
             while (true) {
                 try {
-                    
-                    
-                    System.out.println("Enviando pings");
-                    for (String[] str : clientesConectados) {
-                        idSala = bancoCliente.getCliente(str[0]).getSalaAtual();
-                        System.out.println("Ping cliente "+str[0]);
-                        JSONObject ping = new JSONObject();
-                        ping.put("tipo", 16);
-                        ping.put("sala", idSala);
 
-                        enviarMensagem(ping.toString(), str[1], Integer.parseInt(str[2]));
-                    }
-                    Thread.sleep(5000);
+                    Thread.sleep(30000);
 
-                    if (serverDatagram.isClosed()) {
-                        return;
-                    }
+                    if (serverDatagram.isClosed()) return;
+                    System.out.println("VERIFICANDO PINGS RECEBIDOS");
                     //Confere se todos da lista de conectados enviaram ping
                     for (String[] str : clientesConectados) {
                         if (clientesComPing.get(str[0]) == null) {

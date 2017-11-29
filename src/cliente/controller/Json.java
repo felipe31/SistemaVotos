@@ -23,14 +23,15 @@ public class Json {
         recebimentoThread = new Thread(() -> {
             try {
                 DatagramPacket mensagemPkt = new DatagramPacket(new byte[10000], 10000, InetAddress.getByName(ip), Integer.parseInt(porta));
-                    mensagemPkt.setData(new byte[10000]);
-                    socket.receive(mensagemPkt);
-                    String receiveStr = new String(mensagemPkt.getData());
-                    receiveStr = receiveStr.trim();
-                    JSONObject jsonObj = new JSONObject(receiveStr);
-                    System.out.println("\n[CLIENTE]: Mensagem recebida: " + jsonObj.toString());
-                    System.out.println("\n[CLIENTE]: Mensagem recebida de " + ip + ":" + porta);
-                    jsonThread = jsonObj;
+                mensagemPkt.setData(new byte[10000]);
+                socket.receive(mensagemPkt);
+                String receiveStr = new String(mensagemPkt.getData());
+                receiveStr = receiveStr.trim();
+                JSONObject jsonObj = new JSONObject(receiveStr);
+                System.out.println("\n[CLIENTE]: Mensagem recebida: " + jsonObj.toString());
+                System.out.println("\n[CLIENTE]: Mensagem recebida de " + ip + ":" + porta);
+                jsonThread = jsonObj;
+
             } catch (Exception ex) {
                 System.out.println("Problema na Thread de login");
             }
@@ -43,7 +44,7 @@ public class Json {
     protected JSONObject receberJSON() {
 
         try {
-            Thread.sleep(200);
+            Thread.sleep(50);
         } catch (InterruptedException e) {
             System.out.println("Problema na Thread de login");
 

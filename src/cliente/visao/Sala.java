@@ -226,7 +226,6 @@ public class Sala extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextFieldMensagemActionPerformed
 
     private void jButtonVotarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonVotarActionPerformed
-        homeVisao.getHomeCtrl().enviaPing();
         String opcao = String.valueOf(votosTable.getValueAt(jTableVotos.getSelectedRow(), 0));
         if (opcao != null) {
             if (JOptionPane.showConfirmDialog(this, "O seu voto será para a opção:\n" + opcao + "\n\nConfirmar voto?", "Confirmação de voto", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {

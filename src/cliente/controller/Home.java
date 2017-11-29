@@ -29,7 +29,7 @@ public class Home {
 
     private Cliente cliente;
     private Json jsonOp = new Json();
-    private Thread recebimentoThread = null;
+    private Thread recebimentoThread = null, pingThread = null;
     private DatagramSocket clienteSocket = null;
     private int qtdSalas;
     private DefaultTableModel salasTabela;
@@ -45,7 +45,7 @@ public class Home {
         this.qtdSalas = qtdSalas;
         this.salasTabela = salasTabela;
         abrirRecepcaoJSON(clienteSocket, cliente.getIp(), cliente.getPorta());
-        enviaPing();
+        pingThread = iniciaPingThread();
     }
 
     private void receberSalas(JSONObject json) {
@@ -120,6 +120,7 @@ public class Home {
             try {
                 String receiveStr;
                 DatagramPacket mensagemPkt = new DatagramPacket(new byte[10000], 10000, InetAddress.getByName(ip), Integer.parseInt(porta));
+                clienteSocket.setSoTimeout(0);
                 while (true) {
                     mensagemPkt.setData(new byte[10000]);
                     socket.receive(mensagemPkt);
@@ -145,7 +146,6 @@ public class Home {
                                 if (salaCtrl != null) {
                                     if (jsonObj.has("usuarios")) {
                                         salaCtrl.receberClientesConectados(jsonObj.getJSONArray("usuarios"));
-                                        enviaPing();
                                     } else {
                                         //mensagem mal formada
                                     }
@@ -168,7 +168,6 @@ public class Home {
                                 System.out.println("\n[CLIENTE]: Recepção de mensagem");
 
                                 if (salaCtrl != null) {
-                                    enviaPing();
                                     salaCtrl.receberMensagem(jsonObj);
                                 }
                                 break;
@@ -178,10 +177,7 @@ public class Home {
                                     System.out.println("\n[CLIENTE]: Confirmação de voto");
                                     JOptionPane.showMessageDialog(null, "Voto realizado com sucesso!\nVocê votou na opção:\n" + jsonObj.getString("opcao"), "Voto realizado", JOptionPane.INFORMATION_MESSAGE);
                                 }
-                            case 16:
-                                enviaPing();
                                 break;
-
                             default:
                                 mensagemMalFormada(jsonObj, ip, porta);
                                 System.out.println("Datagrama não suportado");
@@ -240,13 +236,12 @@ public class Home {
                     votoRetornou = false;
                 }
             } catch (InterruptedException ex) {
-                Logger.getLogger(cliente.visao.Home.class
-                        .getName()).log(Level.SEVERE, null, ex);
+                System.out.println(ex.getMessage());
             }
         }).start();
     }
 
-    public void enviaPing() {
+    private void enviaPing() {
         int idSala = -1;
         JSONObject json = new JSONObject();
         json.put("tipo", 16);
@@ -256,7 +251,32 @@ public class Home {
         }
         json.put("sala", idSala);
         jsonOp.enviarJSON(json, clienteSocket, cliente.getIp(), cliente.getPorta());
-        jsonOp.enviarJSON(json, clienteSocket, cliente.getIp(), cliente.getPorta());
     }
+
+    private Thread iniciaPingThread() {
+        Thread thread = new Thread(() -> {
+            while(true){
+                try{
+                Thread.sleep(10000);
+                enviaPing();
+                }catch(Exception e){
+                    System.out.println("Thread do ping interrompido. Vida que segue");
+                }
+            }
+        });
+        
+        thread.start();
+        
+        return thread;
+    }
+
+    public Thread getPingThread() {
+        return pingThread;
+    }
+
+    public void setPingThread(Thread pingThread) {
+        this.pingThread = pingThread;
+    }
+    
 
 }

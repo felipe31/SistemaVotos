@@ -189,6 +189,8 @@ public class Home extends JFrame {
             this.dispose();
             JOptionPane.showMessageDialog(this, "Logout realizado com sucesso!",
                     "Sucesso no Logout", JOptionPane.INFORMATION_MESSAGE);
+            homeCtrl.getPingThread().interrupt();
+            homeCtrl.setPingThread(null);
         } else {
             JOptionPane.showMessageDialog(this, "Erro ao realizar o logout!\nTente novamente.",
                     "Erro!", JOptionPane.ERROR_MESSAGE);

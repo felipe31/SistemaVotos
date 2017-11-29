@@ -40,6 +40,7 @@ public class Login {
         obj.put("senha", hashedPwd);
         try {
             clientSocket = new DatagramSocket();
+            clientSocket.setSoTimeout(100);
         } catch (SocketException ex) {
             return null;
         }
@@ -48,10 +49,11 @@ public class Login {
             JSONObject jsonObj = jsonOp.receberJSON();
             if (jsonObj != null) {
                 if (jsonObj.has("tipo")) {
-                    if (jsonObj.getInt("tipo") == 1 || jsonObj.getInt("tipo") == -1) {
-                        return null;
+                    if (jsonObj.getInt("tipo") == 2) {
+                        return jsonObj;
                     }
-                    return jsonObj;
+                    Deslogar();
+                    return null;
                 }
             }
         }
