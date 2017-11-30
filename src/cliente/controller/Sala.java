@@ -157,7 +157,8 @@ public class Sala {
         votosTableModel.getDataVector().removeAllElements();
         for (int i = 0; i < jsonArray.length(); i++) {
             json = jsonArray.getJSONObject(i);
-            votosTableModel.addRow(json.keySet().toArray());
+            System.out.println(json.keySet().toArray()[0]);
+            votosTableModel.addRow(new Object[]{json.keySet().toArray()[0], json.getInt(String.valueOf(json.keySet().toArray()[0]))});
         }
     }
 

@@ -250,12 +250,18 @@ public class ServerChatUDP extends javax.swing.JPanel {
                     }
                     System.out.println("VERIFICANDO PINGS RECEBIDOS");
                     //Confere se todos da lista de conectados enviaram ping
-                    for (String[] str : clientesConectados) {
+                    
+//                    Iterator  it = clientesConectados.iterator();
+//                    while(it.hasNext()){
+                    for (int i = 0; i < clientesConectados.size(); ++i) {
+                        String[] str = clientesConectados.get(i);
+//                        System.out.println(String.valueOf(str));
                         if (clientesComPing.get(str[0]) == null) {
                             System.out.println("CLIENTE REMOVIDO RA: " + str[0]);
-                            removeConexao(str[1], Integer.parseInt(str[2]));
                             removerClienteSala(str[1], Integer.parseInt(str[2]));
-
+                            removeConexao(str[1], Integer.parseInt(str[2]));
+                            --i;
+                            
                         }
 
                     }

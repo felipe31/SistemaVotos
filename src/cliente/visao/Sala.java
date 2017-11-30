@@ -47,7 +47,12 @@ public class Sala extends javax.swing.JFrame {
         salaCtrl = new cliente.controller.Sala(cliente, clienteSocket, jTextPaneMensagens, jTableClientesConectados, jTableVotos, jScrollPane2, id_sala);
 
         clientesConectadosTable = iniciaJTable(jTableClientesConectados);
+        jTableClientesConectados.getColumnModel().getColumn(0).setPreferredWidth(jTableClientesConectados.getWidth());
+
         votosTable = iniciaJTable(jTableVotos);
+        jTableVotos.getColumnModel().getColumn(0).setPreferredWidth(jTableVotos.getWidth()/2);
+        jTableVotos.getColumnModel().getColumn(1).setPreferredWidth(jTableVotos.getWidth()/2);
+
         jButtonVotar.setEnabled(false);
 
         this.addWindowListener(new WindowAdapter() {
@@ -144,17 +149,17 @@ public class Sala extends javax.swing.JFrame {
 
         jTableVotos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null},
-                {null},
-                {null},
-                {null}
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null}
             },
             new String [] {
-                "Opções para voto"
+                "Votos", "Qtd"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false
+                false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -249,7 +254,6 @@ public class Sala extends javax.swing.JFrame {
         tableModel.setNumRows(0);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         table.setAutoscrolls(true);
-        table.getColumnModel().getColumn(0).setPreferredWidth(table.getWidth());
 
         return tableModel;
     }
