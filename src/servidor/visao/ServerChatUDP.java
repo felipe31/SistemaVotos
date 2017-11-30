@@ -24,6 +24,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.omg.CORBA.ACTIVITY_COMPLETED;
 import servidor.controller.BancoClienteSingleton;
 import servidor.controller.BancoSalasSingleton;
 import servidor.vo.Cliente;
@@ -85,7 +86,9 @@ public class ServerChatUDP extends javax.swing.JPanel {
 
             try {
                 while (true) {
-
+                    if (serverDatagram.isClosed()) {
+                        return;
+                    }
                     buffer = new byte[10240];
                     receivePkt = new DatagramPacket(buffer, buffer.length);
                     serverDatagram.receive(receivePkt);
@@ -242,7 +245,9 @@ public class ServerChatUDP extends javax.swing.JPanel {
 
                     Thread.sleep(30000);
 
-                    if (serverDatagram.isClosed()) return;
+                    if (serverDatagram.isClosed()) {
+                        return;
+                    }
                     System.out.println("VERIFICANDO PINGS RECEBIDOS");
                     //Confere se todos da lista de conectados enviaram ping
                     for (String[] str : clientesConectados) {
@@ -250,6 +255,7 @@ public class ServerChatUDP extends javax.swing.JPanel {
                             System.out.println("CLIENTE REMOVIDO RA: " + str[0]);
                             removeConexao(str[1], Integer.parseInt(str[2]));
                             removerClienteSala(str[1], Integer.parseInt(str[2]));
+
                         }
 
                     }

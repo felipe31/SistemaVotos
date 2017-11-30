@@ -45,7 +45,7 @@ public class Home {
         this.qtdSalas = qtdSalas;
         this.salasTabela = salasTabela;
         abrirRecepcaoJSON(clienteSocket, cliente.getIp(), cliente.getPorta());
-        pingThread = iniciaPingThread();
+        iniciaPingThread();
     }
 
     private void receberSalas(JSONObject json) {
@@ -120,8 +120,8 @@ public class Home {
             try {
                 String receiveStr;
                 DatagramPacket mensagemPkt = new DatagramPacket(new byte[10000], 10000, InetAddress.getByName(ip), Integer.parseInt(porta));
-                clienteSocket.setSoTimeout(0);
-                while (true) {
+                socket.setSoTimeout(0);
+                while (!socket.isClosed()) {
                     mensagemPkt.setData(new byte[10000]);
                     socket.receive(mensagemPkt);
                     receiveStr = new String(mensagemPkt.getData());
@@ -188,14 +188,8 @@ public class Home {
                     receiveStr = null;
                     Thread.sleep(10);
                 }
-            } catch (UnknownHostException ex) {
-                Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (SocketException e) {
-                Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, e);
-            } catch (IOException e) {
-                Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, e);
-            } catch (InterruptedException e) {
-                Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, e);
+            } catch (Exception ex) {
+                System.out.println("Thead Finalizada");
             }
 
         }
@@ -242,6 +236,7 @@ public class Home {
     }
 
     private void enviaPing() {
+        
         int idSala = -1;
         JSONObject json = new JSONObject();
         json.put("tipo", 16);
@@ -254,29 +249,28 @@ public class Home {
     }
 
     private Thread iniciaPingThread() {
-        Thread thread = new Thread(() -> {
-            while(true){
-                try{
-                Thread.sleep(10000);
-                enviaPing();
-                }catch(Exception e){
+        pingThread = new Thread(() -> {
+            
+            while (!pingThread.isInterrupted() && !clienteSocket.isClosed()) {
+                try {
+                    Thread.sleep(10000);
+                    enviaPing();
+                } catch (Exception e) {
                     System.out.println("Thread do ping interrompido. Vida que segue");
                 }
             }
+            pingThread = null;
         });
-        
-        thread.start();
-        
-        return thread;
+        // Thread thread = 
+
+        pingThread.start();
+
+        return null;
+
     }
 
     public Thread getPingThread() {
         return pingThread;
     }
-
-    public void setPingThread(Thread pingThread) {
-        this.pingThread = pingThread;
-    }
-    
 
 }
