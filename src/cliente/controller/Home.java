@@ -77,7 +77,7 @@ public class Home {
         dados = new String[]{String.valueOf(sala.getId()), sala.getNome(),
             sala.getDescricao(), sala.isStatus() ? "Ativo" : "Inativo",
             sala.getCriador(),
-            String.valueOf(c.get(Calendar.DAY_OF_MONTH) + "/" + c.get(Calendar.MONTH) + "/" + c.get(Calendar.YEAR)
+            String.valueOf(c.get(Calendar.DAY_OF_MONTH) + "/" + (c.get(Calendar.MONTH) + 1) + "/" + c.get(Calendar.YEAR)
             + " " + c.get(Calendar.HOUR_OF_DAY) + ":" + c.get(Calendar.MINUTE))};
         if (salasTabela != null) {
             salasTabela.addRow(dados);
@@ -236,7 +236,7 @@ public class Home {
     }
 
     private void enviaPing() {
-        
+
         int idSala = -1;
         JSONObject json = new JSONObject();
         json.put("tipo", 16);
@@ -250,7 +250,7 @@ public class Home {
 
     private Thread iniciaPingThread() {
         pingThread = new Thread(() -> {
-            
+
             while (!pingThread.isInterrupted() && !clienteSocket.isClosed()) {
                 try {
                     Thread.sleep(10000);
