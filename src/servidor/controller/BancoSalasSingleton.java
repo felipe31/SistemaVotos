@@ -7,7 +7,7 @@ package servidor.controller;
 
 import servidor.vo.Sala;
 import java.util.ArrayList;
-import org.json.JSONObject;
+import orgjson.JSONObject;
 import servidor.vo.Voto;
 
 /**
@@ -72,7 +72,7 @@ public final class BancoSalasSingleton {
     public Sala criarSala(String criador_ra, String nome, String descricao, String fim, ArrayList<Voto> opcoesx) {
         String criador_nome = BancoClienteSingleton.getInstance().getCliente(criador_ra).getNome();
         Sala sala = new Sala(i++, criador_ra, criador_nome, nome,
-                descricao, fim, opcoesx);
+                descricao, fim, opcoesx, (Long.valueOf(fim) > (System.currentTimeMillis() / 1000)));
         addSala(sala);
         return sala;
     }

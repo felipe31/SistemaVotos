@@ -9,7 +9,7 @@ import javax.swing.JOptionPane;
 import cliente.vo.Cliente;
 import java.awt.Toolkit;
 import java.security.MessageDigest;
-import org.json.JSONObject;
+import orgjson.JSONObject;
 
 /**
  *

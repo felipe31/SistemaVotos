@@ -1,4 +1,4 @@
-package org.json;
+package orgjson;
 
 import java.util.Map.Entry;
 

@@ -25,7 +25,7 @@ public class Sala {
     private final int id;
     private String inicio;
     private String fim;
-    private boolean status = true;
+    private boolean status;
     private int qtdMensagens;
     private HashSet<Cliente> clientesConectados;
     private ArrayList<Mensagem> mensagemDaSala = new ArrayList<>();
@@ -63,7 +63,7 @@ public class Sala {
         this.mensagemDaSala = mensagemDaSala;
     }
 
-    public Sala(int id, String criador_ra, String criador_nome, String nome, String descricao, String fim, ArrayList<Voto> opcoes) {
+    public Sala(int id, String criador_ra, String criador_nome, String nome, String descricao, String fim, ArrayList<Voto> opcoes, Boolean status) {
         this.criador_ra = criador_ra;
         this.criador_nome = criador_nome;
         this.nome = nome;
@@ -73,6 +73,7 @@ public class Sala {
         this.fim = String.valueOf(fim);
         this.qtdMensagens = 0;
         this.opcoes = opcoes;
+        this.status = status;
         clientesConectados = new HashSet<>();
         qtdVotos = 0;
     }
@@ -194,6 +195,7 @@ public class Sala {
 
     public boolean addVoto(String descricaoVoto, Cliente cliente) {
         int flag = 0;
+        if(!status) return false;
         String votou = cliente.jaVotouNaSala(id);
         if (votou != null) {
             if (votou.equals(descricaoVoto)) {

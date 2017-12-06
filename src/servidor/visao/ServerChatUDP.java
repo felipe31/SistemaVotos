@@ -12,19 +12,17 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.omg.CORBA.ACTIVITY_COMPLETED;
+import orgjson.JSONArray;
+import orgjson.JSONObject;
 import servidor.controller.BancoClienteSingleton;
 import servidor.controller.BancoSalasSingleton;
 import servidor.vo.Cliente;
@@ -42,7 +40,7 @@ public class ServerChatUDP extends javax.swing.JPanel {
     private ArrayList<String[]> clientesConectados = new ArrayList<>();
     private DatagramPacket receivePkt;
     private byte[] buffer = null;
-    private Thread execServidor, threadPing = null;
+    private Thread execServidor, threadPing = null, timestampThread = null;
     private DatagramSocket serverDatagram = null;
     private BancoClienteSingleton bancoCliente = BancoClienteSingleton.getInstance();
     private BancoSalasSingleton bancoSala = BancoSalasSingleton.getInstance();
@@ -52,7 +50,6 @@ public class ServerChatUDP extends javax.swing.JPanel {
 
     private ServerChatUDP() {
         initComponents();
-
         tableClientes = iniciaJTable(clientesJTable, new Object[]{"RA", "IP", "Porta"});
         tableSalas = iniciaJTable(jTableSalas, new Object[]{"ID", "Nome", "Descrição", "Votos", "Criador", "Inicio", "Fim", "Status"});
 
@@ -163,6 +160,7 @@ public class ServerChatUDP extends javax.swing.JPanel {
                                         } catch (Exception e) {
                                             System.out.println("O cliente que tentou criar sala não está conectado!");
                                         }
+                                        
                                         enviaSalaBroadcast(bancoSalasSingleton.criarSala(criador_ra, jSONObject.getString("nome"), jSONObject.getString("descricao"), jSONObject.getString("fim"), opcoes));
                                         status = true;
                                         carregaSalas();
@@ -250,7 +248,7 @@ public class ServerChatUDP extends javax.swing.JPanel {
                     }
                     System.out.println("VERIFICANDO PINGS RECEBIDOS");
                     //Confere se todos da lista de conectados enviaram ping
-                    
+
 //                    Iterator  it = clientesConectados.iterator();
 //                    while(it.hasNext()){
                     for (int i = 0; i < clientesConectados.size(); ++i) {
@@ -261,7 +259,7 @@ public class ServerChatUDP extends javax.swing.JPanel {
                             removerClienteSala(str[1], Integer.parseInt(str[2]));
                             removeConexao(str[1], Integer.parseInt(str[2]));
                             --i;
-                            
+
                         }
 
                     }
@@ -275,6 +273,8 @@ public class ServerChatUDP extends javax.swing.JPanel {
             }
 
         });
+        
+        iniciaTimestampThread();
         threadPing.start();
 
         thread.start();
@@ -809,7 +809,7 @@ public class ServerChatUDP extends javax.swing.JPanel {
         JSONArray jsonArray = new JSONArray();
 
         json.put("tipo", 9);
-        json.put("acabou", (Long.parseLong(sala.getFim()) < System.currentTimeMillis() / 1000));
+        json.put("acabou", (Long.parseLong(sala.getFim()) <= System.currentTimeMillis() / 1000));
 
         for (Voto v : sala.getOpcoes()) {
             jsonVoto = new JSONObject();
@@ -883,8 +883,8 @@ public class ServerChatUDP extends javax.swing.JPanel {
         for (Sala s : salasArray) {
             tableSalas.addRow(new Object[]{s.getId(), s.getNome(), s.getDescricao(), s.getStringVotos(),
                 s.getCriador_nome(),
-                s.getInicio(),
-                s.getFim(),
+                new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new java.util.Date(Long.valueOf(s.getInicio()) * 1000)),
+                new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new java.util.Date(Long.valueOf(s.getFim()) * 1000)),
                 s.getStatus().toString()});
         }
     }
@@ -900,5 +900,53 @@ public class ServerChatUDP extends javax.swing.JPanel {
         sala.getClientesConectados().forEach((c) -> {
             enviarVotosSala(sala, c.getIp(), Integer.parseInt(c.getPorta()));
         });
+    }
+
+    private void iniciaTimestampThread() {
+        timestampThread = new Thread(() -> {
+            while (!timestampThread.isInterrupted() && !serverDatagram.isClosed()) {
+                try {
+                    verificaTimestampSalas();
+                    Thread.sleep(60000);
+                } catch (InterruptedException e) {
+                    System.out.println("Erro thread timestamp");
+                    return;
+                }
+                System.out.println("Timestamp");
+            }
+            System.out.println("Thread Timestamp finalizada");
+        });
+        timestampThread.start();
+    }
+
+    private void verificaTimestampSalas() {
+        BancoSalasSingleton bancoSalas = BancoSalasSingleton.getInstance();
+        ArrayList<Sala> arraySala = bancoSalas.getBancoSala();
+        for (Sala s : arraySala) {
+//            System.out.println(String.valueOf(s.getFim())+ " -- "+ String.valueOf(System.currentTimeMillis() / 1000)+(Long.valueOf(s.getFim()) <= (System.currentTimeMillis() / 1000)));
+            if (Long.valueOf(s.getFim()) <= (System.currentTimeMillis() / 1000)) {
+                finalizaVotacaoSala(s);
+            }
+        }
+    }
+    
+    private void finalizaVotacaoSala(Sala sala) {
+        sala.setStatus(false);
+        Iterator it = sala.getClientesConectados().iterator();
+        Cliente c;
+        atualizarClientesVotos(sala);
+        alteraStatusSala(sala.getId(), false);
+    }
+
+    private void alteraStatusSala(int idSala, boolean status) {
+        for (int i = 0; i < jTableSalas.getRowCount(); i++) {
+            Object o = idSala;
+//            System.out.println(jTableSalas.getValueAt(i, 0) + "--" + idSala + "--" + (Integer.parseInt(String.valueOf(jTableSalas.getValueAt(i, 0))) == (idSala)));
+            if (Integer.parseInt(String.valueOf(jTableSalas.getValueAt(i, 0))) == (idSala)) {
+
+                jTableSalas.setValueAt(status ? "Ativo" : "Inativo", i, 7);
+                return;
+            }
+        }
     }
 }

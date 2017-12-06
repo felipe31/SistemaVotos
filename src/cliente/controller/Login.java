@@ -8,7 +8,7 @@ package cliente.controller;
 import cliente.vo.Cliente;
 import java.net.DatagramSocket;
 import java.net.SocketException;
-import org.json.JSONObject;
+import orgjson.JSONObject;
 
 /**
  *
@@ -40,7 +40,7 @@ public class Login {
         obj.put("senha", hashedPwd);
         try {
             clientSocket = new DatagramSocket();
-            clientSocket.setSoTimeout(100);
+            clientSocket.setSoTimeout(1000);
         } catch (SocketException ex) {
             return null;
         }

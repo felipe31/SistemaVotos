@@ -48,7 +48,7 @@ public class Home extends JFrame {
         this.qtdSalas = qtdSalas;
 
         salasTabela = iniciaJTable(jTableSalas);
-        homeCtrl = new cliente.controller.Home(this, cliente, loginCtrl.getClientSocket(), salasTabela, qtdSalas);
+        homeCtrl = new cliente.controller.Home(this, cliente, loginCtrl.getClientSocket(), salasTabela, jTableSalas, qtdSalas);
 
         MouseListener mouseL = iniciaMouseListener(this);
 

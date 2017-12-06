@@ -14,8 +14,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import orgjson.JSONArray;
+import orgjson.JSONObject;
 
 /**
  *

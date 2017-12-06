@@ -8,18 +8,17 @@ package cliente.controller;
 import cliente.vo.BancoSalasSingleton;
 import cliente.vo.Cliente;
 import cliente.vo.Sala;
-import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.SocketException;
-import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
-import org.json.JSONObject;
+import orgjson.JSONObject;
 
 /**
  *
@@ -29,7 +28,7 @@ public class Home {
 
     private Cliente cliente;
     private Json jsonOp = new Json();
-    private Thread recebimentoThread = null, pingThread = null;
+    private Thread recebimentoThread = null, pingThread = null, timestampThread = null;
     private DatagramSocket clienteSocket = null;
     private int qtdSalas;
     private DefaultTableModel salasTabela;
@@ -37,15 +36,18 @@ public class Home {
     private cliente.visao.Sala salaVisao = null;
     private cliente.visao.Home homeVisao;
     private boolean votoRetornou;
+    private JTable jTableSalas;
 
-    public Home(cliente.visao.Home homeVisao, Cliente cliente, DatagramSocket clienteSocket, DefaultTableModel salasTabela, int qtdSalas) {
+    public Home(cliente.visao.Home homeVisao, Cliente cliente, DatagramSocket clienteSocket, DefaultTableModel salasTabela, JTable jTableSalas, int qtdSalas) {
         this.homeVisao = homeVisao;
         this.cliente = cliente;
         this.clienteSocket = clienteSocket;
         this.qtdSalas = qtdSalas;
         this.salasTabela = salasTabela;
+        this.jTableSalas = jTableSalas;
         abrirRecepcaoJSON(clienteSocket, cliente.getIp(), cliente.getPorta());
         iniciaPingThread();
+        iniciaTimestampThread();
     }
 
     private void receberSalas(JSONObject json) {
@@ -155,6 +157,11 @@ public class Home {
                                 if (salaCtrl != null) {
                                     System.out.println("\n[CLIENTE]: Recepção de status da votação");
                                     salaCtrl.receberVotacao(jsonObj.getJSONArray("resultados"));
+                                    if (jsonObj.has("acabou")) {
+                                        if (jsonObj.getBoolean("acabou")) {
+                                            finalizaVotacaoSala(salaCtrl.getId_sala());
+                                        }
+                                    }
                                 }
                                 break;
                             case 10:
@@ -273,4 +280,53 @@ public class Home {
         return pingThread;
     }
 
+    private void iniciaTimestampThread() {
+        timestampThread = new Thread(() -> {
+            while (!timestampThread.isInterrupted() && !clienteSocket.isClosed()) {
+                try {
+                    verificaTimestampSalas();
+                    Thread.sleep(60000);
+                } catch (InterruptedException e) {
+                    System.out.println("Erro thread timestamp");
+                    return;
+                }
+                System.out.println("Timestamp");
+            }
+            System.out.println("Thread Timestamp finalizada");
+        });
+        timestampThread.start();
+    }
+    
+    private void finalizaVotacaoSala(int id_sala) {
+        BancoSalasSingleton.getInstance().getSala(id_sala).setStatus(false);
+        if (salaCtrl != null) {
+            if (salaCtrl.getId_sala() == id_sala) {
+                salaCtrl.finalizaVotacao();
+            }
+        }
+        alteraStatusSala(id_sala, false);
+    }
+
+    private void verificaTimestampSalas() {
+        BancoSalasSingleton bancoSalas = BancoSalasSingleton.getInstance();
+        ArrayList<Sala> arraySala = bancoSalas.getBancoSala();
+        for (Sala s : arraySala) {
+//            System.out.println(String.valueOf(s.getFim())+ " -- "+ String.valueOf(System.currentTimeMillis() / 1000)+(Long.valueOf(s.getFim()) <= (System.currentTimeMillis() / 1000)));
+            if (Long.valueOf(s.getFim()) <= (System.currentTimeMillis() / 1000)) {
+                finalizaVotacaoSala(s.getId());
+            }
+        }
+    }
+
+    private void alteraStatusSala(int idSala, boolean status) {
+        for (int i = 0; i < salasTabela.getRowCount(); i++) {
+            Object o = idSala;
+//            System.out.println(jTableSalas.getValueAt(i, 0)+"--"+idSala+"--"+( Integer.parseInt(String.valueOf(jTableSalas.getValueAt(i, 0))) == (idSala)));
+            if ( Integer.parseInt(String.valueOf(jTableSalas.getValueAt(i, 0))) == (idSala)) {
+                
+                jTableSalas.setValueAt(status ? "Ativo" : "Inativo", i, 3);
+                return;
+            }
+        }
+    }
 }

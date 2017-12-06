@@ -6,7 +6,7 @@
 package cliente.vo;
 
 import java.util.ArrayList;
-import org.json.JSONObject;
+import orgjson.JSONObject;
 import servidor.vo.Voto;
 /**
  * this.inicio = new Timestamp(System.currentTimeMillis());

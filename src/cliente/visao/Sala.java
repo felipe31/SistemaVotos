@@ -50,8 +50,8 @@ public class Sala extends javax.swing.JFrame {
         jTableClientesConectados.getColumnModel().getColumn(0).setPreferredWidth(jTableClientesConectados.getWidth());
 
         votosTable = iniciaJTable(jTableVotos);
-        jTableVotos.getColumnModel().getColumn(0).setPreferredWidth(jTableVotos.getWidth()/2);
-        jTableVotos.getColumnModel().getColumn(1).setPreferredWidth(jTableVotos.getWidth()/2);
+        jTableVotos.getColumnModel().getColumn(0).setPreferredWidth(jTableVotos.getWidth() / 2);
+        jTableVotos.getColumnModel().getColumn(1).setPreferredWidth(jTableVotos.getWidth() / 2);
 
         jButtonVotar.setEnabled(false);
 
@@ -74,11 +74,14 @@ public class Sala extends javax.swing.JFrame {
         jTableVotos.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
-                if (jTableVotos.getSelectedRow() > -1 && jTableVotos.getSelectedRow() < jTableVotos.getRowCount()) {
-                    jButtonVotar.setEnabled(true);
+                if (jTableVotos.getRowSelectionAllowed()) {
+                    if (jTableVotos.getSelectedRow() > -1 && jTableVotos.getSelectedRow() < jTableVotos.getRowCount()) {
+                        jButtonVotar.setEnabled(true);
 //                    System.out.println(jTableVotos.getValueAt(jTableVotos.getSelectedRow(), 0).toString());
+                    } else {
+                        jButtonVotar.setEnabled(false);
+                    }
                 }
-                else jButtonVotar.setEnabled(false);
 
             }
 

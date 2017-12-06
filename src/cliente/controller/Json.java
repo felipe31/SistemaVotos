@@ -8,7 +8,7 @@ package cliente.controller;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import org.json.JSONObject;
+import orgjson.JSONObject;
 
 /**
  *
@@ -44,7 +44,7 @@ public class Json {
     protected JSONObject receberJSON() {
 
         try {
-            Thread.sleep(50);
+            Thread.sleep(500);
         } catch (InterruptedException e) {
             System.out.println("Problema na Thread de login");
 

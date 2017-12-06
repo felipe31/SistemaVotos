@@ -16,8 +16,8 @@ import java.net.DatagramSocket;
 import javax.swing.JScrollPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.BadLocationException;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import orgjson.JSONArray;
+import orgjson.JSONObject;
 
 /**
  *
@@ -59,6 +59,7 @@ public class Sala {
         String date = new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new java.util.Date(Long.valueOf(timestamp) * 1000));
         StyledDocument doc = jTextPaneMensagens.getStyledDocument();
         try {
+            long ultimo = ultimoTimestamp;
             if (ultimoTimestamp > Long.valueOf(timestamp)) {
                 StyleConstants.setForeground(texto, Color.MAGENTA);
             } else {
@@ -70,6 +71,10 @@ public class Sala {
 
                 doc.insertString(doc.getLength(), "> ", texto);
 
+            }
+            if(origem.equals("Servidor")){
+                StyleConstants.setForeground(texto, Color.GREEN);
+                ultimoTimestamp = ultimo;
             }
             doc.insertString(doc.getLength(), date + " - " + origem + " diz:\n", texto);
             StyleConstants.setForeground(texto, Color.BLACK);
@@ -210,6 +215,12 @@ public class Sala {
 
     public int getId_sala() {
         return id_sala;
+    }
+
+    void finalizaVotacao() {
+        jTableVotos.setRowSelectionAllowed(false);
+        addMensagemVisao("VOTAÇÃO FINALIZADA", "Servidor", String.valueOf(System.currentTimeMillis() / 1000), false);
+        
     }
 
     
