@@ -12,8 +12,10 @@ Any client can create a chat room and set its voting options and due date. There
 
 Note that the focus of this project is to exercise distributed system concepts. For this reason, it might be missing in security.
 
-##Server
+## Server
+
 <img src="docs/screenshots/server.png" alt="Server" width="700"/>
 
-##Client
+## Client
+
 <img src="docs/screenshots/client.png" alt="Client" width="700"/>
