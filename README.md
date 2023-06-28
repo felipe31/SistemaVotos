@@ -1,6 +1,8 @@
 # SistemaVotos
 
-Sistema Votos is a distributed system written in Java. It follows [this](https://github.com/Felipe31/SistemaVotos/blob/master/datagramas.txt)
+Sistema Votos is a distributed system written in Java.
+
+It follows [this](https://github.com/Felipe31/SistemaVotos/blob/master/datagramas.txt)
 protocol, written in Portuguese.
 
 It contains a server that holds chat rooms and clients. Each chat room can have options for voting and a due date. The chat is still available after the voting is finished.
